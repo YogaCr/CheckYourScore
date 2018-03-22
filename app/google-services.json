@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "506940557398",
+    "firebase_url": "https://checkyourscore-dd7d7.firebaseio.com",
+    "project_id": "checkyourscore-dd7d7",
+    "storage_bucket": "checkyourscore-dd7d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506940557398:android:e9cec84e22042738",
+        "android_client_info": {
+          "package_name": "id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506940557398-0387cmsftrurnei6oef3e60r9jtol6v7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp61cqGaVi-tx6f6jqyRJCNaOfcWPjIl4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
