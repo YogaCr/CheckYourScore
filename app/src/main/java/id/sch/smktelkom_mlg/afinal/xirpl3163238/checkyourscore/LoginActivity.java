@@ -1,6 +1,5 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -75,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         layoutSignUp = findViewById(R.id.SignUpLayout);
         layoutVerifikasi = findViewById(R.id.VerifikasiLayout);
         progressBarLogin = findViewById(R.id.progressBarLogin);
-        sharedPreferences = getSharedPreferences(pref_key, Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(pref_key, MODE_PRIVATE);
         etEmailLogIn = findViewById(R.id.SignInEmail);
         etPasswordLogIn = findViewById(R.id.SignInPassword);
         etNamaSignUp = findViewById(R.id.signUpNama);
@@ -109,6 +108,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
+                                finish();
                             } else {
 
                             }
@@ -138,10 +138,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mAuth.signInWithCredential(authCredential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        Auth.GoogleSignInApi.signOut(googleApiClient);
-                        startActivity(i);
+                        editor = sharedPreferences.edit();
+                        if (guru) {
+                            editor.putBoolean(pref_key, true);
+                            editor.apply();
+                            Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            Auth.GoogleSignInApi.signOut(googleApiClient);
+                            startActivity(i);
+                            finish();
+                        } else {
+                            editor.putBoolean(pref_key, false);
+                        }
+
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -259,6 +269,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
                                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(i);
+                                    finish();
                                 }
                             } else {
                                 progressBarLogin.setVisibility(View.INVISIBLE);
@@ -289,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
+                        finish();
                     }
                 } else {
                     Snackbar.make(findViewById(R.id.loginView), "Email anda belum diverifikasi", Snackbar.LENGTH_SHORT).show();
@@ -313,4 +325,5 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Snackbar.make(findViewById(R.id.loginView), connectionResult.getErrorMessage(), Snackbar.LENGTH_SHORT).show();
     }
+
 }
