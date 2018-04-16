@@ -1,5 +1,6 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,11 +37,14 @@ public class MenuGuruActivity extends AppCompatActivity
     List<MapelClass> mapelList = new ArrayList<>();
     MapelAdapter mapelAdapter;
     FirebaseFirestore firestore;
-
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_guru);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Mohon Tunggu");
+        progressDialog.show();
         navigationView = findViewById(R.id.nav_view);
         rvMapel = findViewById(R.id.rvMapelGuru);
         headerview = navigationView.getHeaderView(0);
@@ -58,7 +62,7 @@ public class MenuGuruActivity extends AppCompatActivity
                 }
             }
         });
-        firestore.collection("Mapel").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firestore.collection("Mapel").whereEqualTo("UID Guru", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -73,6 +77,7 @@ public class MenuGuruActivity extends AppCompatActivity
                     mapelAdapter.notifyDataSetChanged();
                     rvMapel.setLayoutManager(new GridLayoutManager(MenuGuruActivity.this, 3));
                     rvMapel.setAdapter(mapelAdapter);
+                    progressDialog.hide();
                 }
             }
         });
