@@ -71,6 +71,7 @@ public class MenuGuruActivity extends AppCompatActivity
                         m.setNama(documentSnapshot.getString("Nama"));
                         m.setKelas(documentSnapshot.getString("Kelas"));
                         m.setIconResource(getResources().getIdentifier(documentSnapshot.getString("Icon"), "drawable", getPackageName()));
+                        m.setUniqueCode(documentSnapshot.getId());
                         mapelList.add(m);
                     }
                     mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList);
