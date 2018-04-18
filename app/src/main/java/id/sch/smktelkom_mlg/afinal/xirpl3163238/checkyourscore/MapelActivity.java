@@ -78,11 +78,13 @@ public class MapelActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new nilai();
+                    return new TugasFragment();
                 case 1:
+                    return new UlanganFragment();
+                case 2:
                     return new Statistik();
                 default:
-                    return new nilai();
+                    return new TugasFragment();
             }
         }
 

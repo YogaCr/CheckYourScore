@@ -25,7 +25,9 @@
             android:name=".MenuGuruActivity"
             android:theme="@style/NoActionBar" />
         <activity android:name=".BuatMapelActivity" />
-        <activity android:name=".MapelActivity" />
+        <activity
+            android:name=".MapelActivity"
+            android:theme="@style/NoActionBar" />
         <activity
             android:name=".MapelGuruActivity"
             android:theme="@style/NoActionBar" />
