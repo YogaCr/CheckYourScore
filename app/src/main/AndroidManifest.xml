@@ -29,6 +29,14 @@
         <activity
             android:name=".MapelGuruActivity"
             android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".activity_menu_siswa"
+            android:label="@string/title_activity_menu_siswa"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MenuSiswaActivity"
+            android:label="@string/title_activity_menu_siswa"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
