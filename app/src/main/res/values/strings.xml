@@ -8,6 +8,7 @@
     <string name="title_activity_mapel">MapelActivity</string>
     <string name="tab_text_1">Nilai</string>
     <string name="tab_text_2">Statistik</string>
+    <string name="title_activity_menu_siswa">activity_menu_siswa</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
