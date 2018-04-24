@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.InputNilaiActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvTambahNilai"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="24dp" />
+
+</LinearLayout>
