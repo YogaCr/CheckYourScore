@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name">Check Your Score</string>
-    <string name="title_activity_menu_guru">Menu Guru</string>
 
-    <string name="navigation_drawer_open">Buka navigation drawer</string>
-    <string name="navigation_drawer_close">Tutup navigation drawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_mapel">MapelActivity</string>
+    <string name="tab_text_1">Nilai</string>
+    <string name="tab_text_2">Statistik</string>
+    <string name="title_activity_menu_siswa">activity_menu_siswa</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 </resources>

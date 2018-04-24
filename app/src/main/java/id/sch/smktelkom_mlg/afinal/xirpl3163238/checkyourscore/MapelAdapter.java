@@ -1,7 +1,6 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,9 +38,9 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
         holder.cvMapel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(context, MapelGuruActivity.class);
+                /*Intent i = new Intent(context, MapelGuruActivity.class);
                 i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
-                context.startActivity(i);
+                context.startActivity(i);*/
             }
         });
     }
