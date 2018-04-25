@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class TambahBabActivity extends AppCompatActivity {
     Spinner spnLinkRemidi, spnJenis;

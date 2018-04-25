@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.List;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.SiswaClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 /**
  * Created by Sakata Yoga on 18/04/2018.
@@ -48,7 +51,7 @@ public class InputNilaiAdapter extends RecyclerView.Adapter<InputNilaiAdapter.Vi
         return siswa.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNama;
         EditText etNilai;
 

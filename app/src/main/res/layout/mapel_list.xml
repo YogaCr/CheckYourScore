@@ -4,6 +4,7 @@
     android:id="@+id/cv_mapel"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
     app:cardCornerRadius="15dp">
 
     <LinearLayout
@@ -13,9 +14,10 @@
 
         <ImageView
             android:id="@+id/ivRvIconMapel"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_margin="10dp" />
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp" />
 
         <TextView
             android:id="@+id/tvRvNamaMapel"

@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,6 +18,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.SiswaClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.InputNilaiAdapter;
 
 public class InputNilaiActivity extends AppCompatActivity {
     List<SiswaClass> siswaClasses = new ArrayList<>();
@@ -49,13 +52,11 @@ public class InputNilaiActivity extends AppCompatActivity {
                         firestore.collection("Siswa").document(ds.getString("Siswa")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
                                 if (task.isSuccessful()) {
                                     SiswaClass siswaClass = new SiswaClass();
                                     siswaClass.setUID(task.getResult().getId());
                                     siswaClass.setNama(task.getResult().getString("Nama"));
                                     siswaClasses.add(siswaClass);
-                                    Toast.makeText(InputNilaiActivity.this, siswaClasses.get(0).getNama(), Toast.LENGTH_SHORT).show();
                                     adapter.setSiswa(siswaClasses);
                                     adapter.notifyDataSetChanged();
                                     rvSiswa.setLayoutManager(new LinearLayoutManager(InputNilaiActivity.this));

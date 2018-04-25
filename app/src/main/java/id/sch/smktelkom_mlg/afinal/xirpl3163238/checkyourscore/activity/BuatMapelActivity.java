@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,11 +30,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.CustomAdapter;
+
 public class BuatMapelActivity extends AppCompatActivity {
     private final int PICK_IMAGE_REQUEST = 71;
     FirebaseFirestore firestore;
     FirebaseStorage storage;
-    ProgressBar pbBuatMapel;
     LinearLayout layoutBuatMapel;
     EditText etNama, etKelas;
     StorageReference storageReference;
@@ -48,7 +49,7 @@ public class BuatMapelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buat_mapel);
-        pbBuatMapel = findViewById(R.id.pBBuatMapel);
+
         layoutBuatMapel = findViewById(R.id.layoutBuatMapel);
         spin = findViewById(R.id.spinnerIcon);
         ivSampul = findViewById(R.id.ivSampul);

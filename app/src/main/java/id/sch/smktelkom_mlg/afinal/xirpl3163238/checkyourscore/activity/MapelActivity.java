@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -13,6 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.Statistik;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.TugasFragment;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganFragment;
 
 /**
  * Created by Ferlina Firdausi on 28/03/2018.
@@ -36,8 +41,8 @@ public class MapelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mapel);
 
         tabLayout = findViewById(R.id.tabs);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_nilai);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_graph);
+        tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
+        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         imageView = findViewById(R.id.gambarmapel);
@@ -78,13 +83,13 @@ public class MapelActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new TugasFragment();
-                case 1:
-                    return new UlanganFragment();
-                case 2:
                     return new Statistik();
-                default:
+                case 1:
                     return new TugasFragment();
+                case 2:
+                    return new UlanganFragment();
+                default:
+                    return new Statistik();
             }
         }
 

@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
 import android.os.Bundle;
@@ -12,18 +12,21 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.NilaiClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.NilaiAdapter;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TugasFragment extends Fragment {
-
+public class UlanganFragment extends Fragment {
 
     RecyclerView rvNilaiUlangan;
     NilaiAdapter nilaiAdapter;
     List<NilaiClass> nilaiUlanganList = new ArrayList<>();  //menglist dari nilai class
 
-    public TugasFragment() {
+    public UlanganFragment() {
         // Required empty public constructor
     }
 
@@ -35,10 +38,10 @@ public class TugasFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_ulangan, container, false);
         rvNilaiUlangan = v.findViewById(R.id.recyclerView);
         rvNilaiUlangan.setFocusable(false);
-        nilaiUlanganList.add(new NilaiClass("Himpunan", 100, true));
-        nilaiUlanganList.add(new NilaiClass("Fungsi", 80, true));
+        nilaiUlanganList.add(new NilaiClass("Himpunan", 90, true));
+        nilaiUlanganList.add(new NilaiClass("Fungsi", 65, false));
         nilaiUlanganList.add(new NilaiClass("SPLTV", 95, true));
-        nilaiUlanganList.add(new NilaiClass("Transformasi", 70, false));
+        nilaiUlanganList.add(new NilaiClass("Transformasi", 50, false));
         nilaiUlanganList.add(new NilaiClass("Himpunan", 100, true));
         nilaiUlanganList.add(new NilaiClass("Fungsi", 80, true));
         nilaiUlanganList.add(new NilaiClass("SPLTV", 95, true));

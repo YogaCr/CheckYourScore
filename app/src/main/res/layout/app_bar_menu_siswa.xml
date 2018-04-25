@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.MenuGuruActivity">
+    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MenuGuruActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

@@ -1,6 +1,7 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.MapelClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelGuruActivity;
 
 /**
  * Created by Sakata Yoga on 12/04/2018.
@@ -38,9 +43,9 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
         holder.cvMapel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent i = new Intent(context, MapelGuruActivity.class);
+                Intent i = new Intent(context, MapelGuruActivity.class);
                 i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
-                context.startActivity(i);*/
+                context.startActivity(i);
             }
         });
     }
@@ -50,10 +55,11 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
         return mapelList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivIcon;
         public TextView tvNamaMapel, tvKelasMapel;
         public CardView cvMapel;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ivIcon = itemView.findViewById(R.id.ivRvIconMapel);
