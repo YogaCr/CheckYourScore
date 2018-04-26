@@ -27,7 +27,7 @@
         android:gravity="center_horizontal"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Android Studio"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="#fff"
         android:textSize="20sp" />
 
     <TextView
@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="android.studio@android.com"
+        android:textColor="#fff"
         android:textStyle="bold" />
 
 </LinearLayout>
