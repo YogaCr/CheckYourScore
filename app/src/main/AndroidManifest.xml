@@ -33,8 +33,8 @@
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.MenuSiswaActivity"
-            android:label="@string/title_activity_menu_siswa"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="Menu Siswa"
+            android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.TambahBabActivity"
             android:label="Tambah Bab"
