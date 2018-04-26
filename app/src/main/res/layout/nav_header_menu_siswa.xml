@@ -13,7 +13,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/ivProfilGuru"
+        android:id="@+id/ivProfilSiswa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -21,7 +21,7 @@
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
-        android:id="@+id/tvNamaGuru"
+        android:id="@+id/tvNamaSiswa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -31,7 +31,7 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/tvEmailGuru"
+        android:id="@+id/tvEmailSiswa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
