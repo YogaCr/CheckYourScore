@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.NilaiClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+
 /**
  * Created by Ferlina Firdausi on 18/04/2018.
  */
@@ -17,12 +20,12 @@ import java.util.List;
 public class NilaiAdapter extends RecyclerView.Adapter<NilaiAdapter.ViewHolder> {
     List<NilaiClass> nilaiList;
     Context context;
-    int x;
+
 
     public NilaiAdapter(List<NilaiClass> nilaiList, Context context) {
         this.nilaiList = nilaiList;
         this.context = context;
-        x = 1;
+
     }
 
     @Override
@@ -37,6 +40,7 @@ public class NilaiAdapter extends RecyclerView.Adapter<NilaiAdapter.ViewHolder> 
         holder.deskripsi.setText(nilaiList.get(position).getDeskripsi());
         holder.nilai.setText(String.valueOf(nilaiList.get(position).getNilai()));
         holder.status.setText(nilaiList.get(position).getStatus());
+
     }
 
     @Override

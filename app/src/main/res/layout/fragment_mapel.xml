@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:theme="@style/AppTheme.NoActionBar"
-    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.MapelActivity">
+    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_weight="1"
-            android:background="@drawable/bg1"
+
             android:fitsSystemWindows="true"
             android:minHeight="30dp"
             app:contentScrim="@color/colorPrimary"

@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class MenuSiswaActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

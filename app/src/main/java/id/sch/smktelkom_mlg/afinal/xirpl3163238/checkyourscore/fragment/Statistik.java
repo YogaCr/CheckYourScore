@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 
 /**

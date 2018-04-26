@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 /**
  * Created by Sakata Yoga on 12/04/2018.

@@ -6,12 +6,19 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_mapel">MapelActivity</string>
-    <string name="tab_text_1">Nilai</string>
-    <string name="tab_text_2">Statistik</string>
+    <string name="tab_text_1">Statistik</string>
+    <string name="tab_text_2">Tugas</string>
+    <string name="tab_text_3">Ulangan</string>
     <string name="title_activity_menu_siswa">activity_menu_siswa</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
+    <string-array name="jenis_nilai">
+        <item>Tugas</item>
+        <item>Ulangan</item>
+    </string-array>
+    <string-array name="yes_no">
+        <item>Tidak</item>
+        <item>Ya</item>
+    </string-array>
 </resources>

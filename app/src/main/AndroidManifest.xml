@@ -13,35 +13,38 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:theme="@style/NoActionBar">
-
-        </activity>
-        <activity
-            android:name=".MenuGuruActivity"
-            android:theme="@style/NoActionBar" />
-        <activity android:name=".BuatMapelActivity" />
-        <activity
-            android:name=".MapelActivity"
-            android:theme="@style/NoActionBar" />
-        <!--<activity
-            android:name=".MapelGuruActivity"
-            android:theme="@style/NoActionBar" />-->
-        <activity
-            android:name=".MenuSiswaActivity"
-            android:label="@string/title_activity_menu_siswa"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".EditProfileActivity" />
-        <activity
-            android:name=".StepperActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.MenuGuruActivity"
+            android:theme="@style/NoActionBar" />
+        <activity android:name=".activity.BuatMapelActivity" />
+        <activity
+            android:name=".activity.MapelActivity"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".activity.MapelGuruActivity"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".activity.MenuSiswaActivity"
+            android:label="@string/title_activity_menu_siswa"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.TambahBabActivity"
+            android:label="Tambah Bab"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".activity.InputNilaiActivity"
+            android:label="Input Nilai"
+            android:theme="@style/AppTheme" />
+        <!--<activity android:name=".EditProfileActivity"></activity>-->
     </application>
 
 </manifest>

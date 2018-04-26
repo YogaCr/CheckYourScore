@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f27b0c"
-    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.LoginActivity">
+    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.LoginActivity">
 
     <ProgressBar
         android:id="@+id/progressBarLogin"

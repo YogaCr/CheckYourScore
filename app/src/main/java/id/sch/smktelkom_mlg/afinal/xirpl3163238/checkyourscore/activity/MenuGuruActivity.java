@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,9 +10,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -27,6 +28,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.MapelClass;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.MapelAdapter;
+
 public class MenuGuruActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     FirebaseAuth mAuth;
@@ -38,14 +43,17 @@ public class MenuGuruActivity extends AppCompatActivity
     MapelAdapter mapelAdapter;
     FirebaseFirestore firestore;
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_guru);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Mohon Tunggu");
-        progressDialog.show();
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
         navigationView = findViewById(R.id.nav_view);
+
         rvMapel = findViewById(R.id.rvMapelGuru);
         headerview = navigationView.getHeaderView(0);
         tvNamaGuru = headerview.findViewById(R.id.tvNamaGuru);
@@ -54,34 +62,8 @@ public class MenuGuruActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        firestore.collection("Guru").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    tvNamaGuru.setText(task.getResult().getString("Nama"));
-                }
-            }
-        });
-        firestore.collection("Mapel").whereEqualTo("UID Guru", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                        MapelClass m = new MapelClass();
-                        m.setNama(documentSnapshot.getString("Nama"));
-                        m.setKelas(documentSnapshot.getString("Kelas"));
-                        m.setIconResource(getResources().getIdentifier(documentSnapshot.getString("Icon"), "drawable", getPackageName()));
-                        m.setUniqueCode(documentSnapshot.getId());
-                        mapelList.add(m);
-                    }
-                    mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList);
-                    mapelAdapter.notifyDataSetChanged();
-                    rvMapel.setLayoutManager(new GridLayoutManager(MenuGuruActivity.this, 3));
-                    rvMapel.setAdapter(mapelAdapter);
-                    progressDialog.hide();
-                }
-            }
-        });
+        tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
+        getData();
 
         tvEmailGuru.setText(mAuth.getCurrentUser().getEmail());
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -113,6 +95,52 @@ public class MenuGuruActivity extends AppCompatActivity
         }
     }
 
+    void getData() {
+        mapelList.clear();
+        progressDialog.show();
+        firestore.collection("Mapel").whereEqualTo("UID Guru", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                        MapelClass m = new MapelClass();
+                        m.setNama(documentSnapshot.getString("Nama"));
+                        m.setKelas(documentSnapshot.getString("Kelas"));
+                        if (documentSnapshot.contains("Sampul")) {
+                            m.setUrlSampul(documentSnapshot.getString("Sampul"));
+                        }
+                        m.setIconResource(getResources().getIdentifier(documentSnapshot.getString("Icon"), "drawable", getPackageName()));
+                        m.setUniqueCode(documentSnapshot.getId());
+                        mapelList.add(m);
+                    }
+                    mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList);
+                    mapelAdapter.notifyDataSetChanged();
+                    rvMapel.setLayoutManager(new LinearLayoutManager(MenuGuruActivity.this));
+                    rvMapel.setAdapter(mapelAdapter);
+
+                }
+                progressDialog.hide();
+            }
+
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.menuRefresh:
+                getData();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_refresh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

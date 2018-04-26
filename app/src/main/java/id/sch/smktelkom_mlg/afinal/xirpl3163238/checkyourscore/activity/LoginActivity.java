@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,17 +20,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth mAuth;
@@ -142,6 +147,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         if (guru) {
                             editor.putBoolean(pref_key, true);
                             editor.apply();
+                            firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
+                                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
+                                            mAuth.getCurrentUser().updateProfile(profileChangeRequest);
+                                        }
+                                    }
+                                }
+                            });
                             Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             Auth.GoogleSignInApi.signOut(googleApiClient);
@@ -222,11 +238,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
                             Map<String, Object> data = new HashMap<>();
                             data.put("Nama", etNamaSignUp.getText().toString());
-                            firestore.collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
                             mAuth.getCurrentUser().sendEmailVerification();
                             editor = sharedPreferences.edit();
                             if (guru) {
                                 editor.putBoolean(pref_key, true);
+                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
                             } else {
                                 editor.putBoolean(pref_key, false);
                             }

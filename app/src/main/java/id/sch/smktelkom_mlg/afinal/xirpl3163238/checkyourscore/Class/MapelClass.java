@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class;
 
 /**
  * Created by Sakata Yoga on 12/04/2018.
@@ -9,6 +9,15 @@ public class MapelClass {
     private String kelas;
     private String uniqueCode;
     private int iconResource;
+    private String urlSampul = "";
+
+    public String getUrlSampul() {
+        return urlSampul;
+    }
+
+    public void setUrlSampul(String urlSampul) {
+        this.urlSampul = urlSampul;
+    }
 
     public String getNama() {
         return nama;
