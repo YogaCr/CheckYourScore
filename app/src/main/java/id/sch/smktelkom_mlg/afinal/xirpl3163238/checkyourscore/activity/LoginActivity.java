@@ -28,6 +28,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,15 +40,15 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth mAuth;
-    CardView layoutPilihLogin, layoutLogin, layoutSignUp, layoutVerifikasi;
+    CardView layoutPilihLogin, layoutLogin, layoutSignUp, layoutVerifikasi, layoutSetupPassword;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     String pref_key = "IS_GURU";
     int RC_Login = 1;
     Animation animRightLeftExit, animRightLeftEntrance;
     ProgressBar progressBarLogin;
-    EditText etEmailLogIn, etPasswordLogIn, etNamaSignUp, etEmailSignUp, etPasswordSignUp;
-    boolean guru;
+    EditText etEmailLogIn, etPasswordLogIn, etNamaSignUp, etEmailSignUp, etPasswordSignUp, etSetupPassword;
+    boolean guru, useEmailPassword;
     GoogleApiClient googleApiClient;
     GoogleSignInOptions gso;
     FirebaseFirestore firestore;
@@ -78,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         layoutLogin = findViewById(R.id.LoginLayout);
         layoutSignUp = findViewById(R.id.SignUpLayout);
         layoutVerifikasi = findViewById(R.id.VerifikasiLayout);
+        layoutSetupPassword = findViewById(R.id.LoginSetPassword);
         progressBarLogin = findViewById(R.id.progressBarLogin);
         sharedPreferences = getSharedPreferences(pref_key, MODE_PRIVATE);
         etEmailLogIn = findViewById(R.id.SignInEmail);
@@ -85,6 +87,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         etNamaSignUp = findViewById(R.id.signUpNama);
         etEmailSignUp = findViewById(R.id.signUpEmail);
         etPasswordSignUp = findViewById(R.id.signUpPassword);
+        etSetupPassword = findViewById(R.id.SignInAturPassword);
 
         animRightLeftEntrance = AnimationUtils.loadAnimation(this, R.anim.righttoleftentrance);
         animRightLeftExit = AnimationUtils.loadAnimation(this, R.anim.righttoleftexit);
@@ -103,6 +106,34 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivityForResult(googleLogin, RC_Login);
             }
         });
+        findViewById(R.id.btnLoginAturPassword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (etSetupPassword.getText().toString().isEmpty()) {
+                    etSetupPassword.setError("Masukkan password");
+                } else {
+                    mAuth.getCurrentUser().updatePassword(etSetupPassword.getText().toString());
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("Nama", mAuth.getCurrentUser().getDisplayName());
+                    if (guru) {
+                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
+                        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Auth.GoogleSignInApi.signOut(googleApiClient);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
+                        Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Auth.GoogleSignInApi.signOut(googleApiClient);
+                        startActivity(i);
+                        finish();
+                    }
+
+                }
+            }
+        });
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -115,7 +146,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 startActivity(i);
                                 finish();
                             } else {
-
+                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                                finish();
                             }
                         }
                     } else {
@@ -151,20 +185,87 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     if (task.isSuccessful()) {
-                                        if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
-                                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
-                                            mAuth.getCurrentUser().updateProfile(profileChangeRequest);
+                                        if (!task.getResult().exists()) {
+                                            for (UserInfo userInfo : mAuth.getCurrentUser().getProviderData()) {
+                                                if (userInfo.getProviderId().equals("password")) {
+                                                    useEmailPassword = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (useEmailPassword) {
+                                                Map<String, Object> data = new HashMap<>();
+                                                data.put("Nama", mAuth.getCurrentUser().getDisplayName());
+                                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
+                                                Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                Auth.GoogleSignInApi.signOut(googleApiClient);
+                                                startActivity(i);
+                                                finish();
+                                            } else {
+                                                layoutLogin.startAnimation(animRightLeftExit);
+                                                layoutSetupPassword.startAnimation(animRightLeftEntrance);
+                                                layoutLogin.setVisibility(View.INVISIBLE);
+                                                layoutSetupPassword.setVisibility(View.VISIBLE);
+                                            }
+                                        } else {
+                                            if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
+                                                UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
+                                                mAuth.getCurrentUser().updateProfile(profileChangeRequest);
+                                                Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                Auth.GoogleSignInApi.signOut(googleApiClient);
+                                                startActivity(i);
+                                                finish();
+                                            }
                                         }
                                     }
                                 }
                             });
-                            Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            Auth.GoogleSignInApi.signOut(googleApiClient);
-                            startActivity(i);
-                            finish();
+
                         } else {
                             editor.putBoolean(pref_key, false);
+                            editor.apply();
+                            firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        if (!task.getResult().exists()) {
+                                            for (UserInfo userInfo : mAuth.getCurrentUser().getProviderData()) {
+                                                if (userInfo.getProviderId().equals("password")) {
+                                                    useEmailPassword = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (useEmailPassword) {
+                                                Map<String, Object> data = new HashMap<>();
+                                                data.put("Nama", mAuth.getCurrentUser().getDisplayName());
+                                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
+                                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                Auth.GoogleSignInApi.signOut(googleApiClient);
+                                                startActivity(i);
+                                                finish();
+                                            } else {
+                                                layoutLogin.startAnimation(animRightLeftExit);
+                                                layoutSetupPassword.startAnimation(animRightLeftEntrance);
+                                                layoutLogin.setVisibility(View.INVISIBLE);
+                                                layoutSetupPassword.setVisibility(View.VISIBLE);
+                                            }
+                                        } else {
+                                            if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
+                                                UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
+                                                mAuth.getCurrentUser().updateProfile(profileChangeRequest);
+                                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                Auth.GoogleSignInApi.signOut(googleApiClient);
+                                                startActivity(i);
+                                                finish();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
                         }
 
 
@@ -283,6 +384,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             if (mAuth.getCurrentUser().isEmailVerified()) {
                                 if (guru) {
                                     Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(i);
+                                    finish();
+                                } else {
+                                    Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
                                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(i);
                                     finish();
