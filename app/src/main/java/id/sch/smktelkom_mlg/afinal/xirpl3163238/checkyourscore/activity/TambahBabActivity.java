@@ -1,5 +1,6 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,12 +29,18 @@ public class TambahBabActivity extends AppCompatActivity {
     View itRemidi;
     EditText etLinkRemidi, etNamaBab, etPesanRemidi;
     FirebaseFirestore firestore;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tambah_bab);
         this.setTitle("Tambah Nilai");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Tunggu");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+
         firestore = FirebaseFirestore.getInstance();
         etNamaBab = findViewById(R.id.etTambahNilaiNama);
         etPesanRemidi = findViewById(R.id.etTambahNilaiRemidi);
@@ -63,12 +70,12 @@ public class TambahBabActivity extends AppCompatActivity {
         btnSelesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (etNamaBab.getText().toString() == "") {
+                if (etNamaBab.getText().toString().isEmpty()) {
                     etNamaBab.setError("Tolong masukkan nama materi");
-                } else if ((spnLinkRemidi.getSelectedItemPosition() == 1 && etLinkRemidi.getText().toString() == "") || (spnLinkRemidi.getSelectedItemPosition() == 1 && !Patterns.WEB_URL.matcher(etLinkRemidi.getText().toString()).matches())) {
+                } else if ((spnLinkRemidi.getSelectedItemPosition() == 1 && etLinkRemidi.getText().toString().isEmpty()) || (spnLinkRemidi.getSelectedItemPosition() == 1 && !Patterns.WEB_URL.matcher(etLinkRemidi.getText().toString()).matches())) {
                     etPesanRemidi.setError("Tolong masukkan link remidi dengan benar");
                 } else {
-
+                    progressDialog.show();
                     Map<String, Object> data = new HashMap<>();
                     data.put("Nama", etNamaBab.getText().toString());
                     if (spnJenis.getSelectedItemPosition() == 0) {
@@ -76,7 +83,7 @@ public class TambahBabActivity extends AppCompatActivity {
                     } else {
                         data.put("Tugas", false);
                     }
-                    if (etPesanRemidi.getText().toString() != "") {
+                    if (!etPesanRemidi.getText().toString().isEmpty()) {
                         data.put("PesanRemidi", etPesanRemidi.getText().toString());
                     } else {
                         data.put("PesanRemidi", "-");
@@ -88,6 +95,7 @@ public class TambahBabActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
                             if (task.isSuccessful()) {
+                                progressDialog.hide();
                                 Intent in = new Intent(TambahBabActivity.this, InputNilaiActivity.class);
                                 in.putExtra("IDMateri", task.getResult().getId());
                                 in.putExtra("UniqueCode", uniqueCode);
