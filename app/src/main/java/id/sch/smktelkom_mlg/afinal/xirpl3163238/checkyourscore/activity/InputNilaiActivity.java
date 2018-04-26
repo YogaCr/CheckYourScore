@@ -32,6 +32,7 @@ public class InputNilaiActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
     ProgressDialog progressDialog;
     String uniqueCode, materi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +102,11 @@ public class InputNilaiActivity extends AppCompatActivity {
             if (rvSiswa.findViewHolderForLayoutPosition(x) instanceof InputNilaiAdapter.ViewHolder) {
                 InputNilaiAdapter.ViewHolder viewHolder = (InputNilaiAdapter.ViewHolder) rvSiswa.findViewHolderForLayoutPosition(x);
                 Map<String, Object> data = new HashMap<>();
-                data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
+                if (viewHolder.etNilai.getText().toString().isEmpty()) {
+                    data.put("Nilai", siswaClasses.get(x).getNilai());
+                } else {
+                    data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
+                }
                 firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").document(siswaClasses.get(x).getUID()).collection("Nilai").document(materi).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

@@ -35,7 +35,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.NilaiTugasGuruFragment;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.StatistikGuruFragment;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganGuruFragment;
 
 public class MapelGuruActivity extends AppCompatActivity {
     /**
@@ -59,13 +61,14 @@ public class MapelGuruActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mapel_guru);
         i = getIntent();
         tabLayout = findViewById(R.id.tabs);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_nilai);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_graph);
+        tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
+        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         ivIcon = findViewById(R.id.gambarmapel);
         ivSampul = findViewById(R.id.ivSampul);
         toolbar = findViewById(R.id.tb);
+
         ctl = findViewById(R.id.ctl);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
@@ -129,7 +132,7 @@ public class MapelGuruActivity extends AppCompatActivity {
                             }
                         }).into(ivSampul);
                     } else {
-                        progressDialog.hide();
+
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapelGuruActivity.this);
@@ -143,6 +146,7 @@ public class MapelGuruActivity extends AppCompatActivity {
                     });
                     builder.show();
                 }
+                progressDialog.hide();
             }
         });
     }
@@ -179,6 +183,10 @@ public class MapelGuruActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return new StatistikGuruFragment();
+                case 1:
+                    return new NilaiTugasGuruFragment();
+                case 2:
+                    return new UlanganGuruFragment();
                 default:
                     return new StatistikGuruFragment();
             }
@@ -186,7 +194,7 @@ public class MapelGuruActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }
