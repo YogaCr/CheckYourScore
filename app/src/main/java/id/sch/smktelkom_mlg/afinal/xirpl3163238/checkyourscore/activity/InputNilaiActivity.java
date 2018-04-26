@@ -17,7 +17,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.SiswaClass;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
@@ -29,7 +31,7 @@ public class InputNilaiActivity extends AppCompatActivity {
     InputNilaiAdapter adapter;
     FirebaseFirestore firestore;
     ProgressDialog progressDialog;
-
+    String uniqueCode, materi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,14 +44,17 @@ public class InputNilaiActivity extends AppCompatActivity {
         adapter = new InputNilaiAdapter(this);
         rvSiswa.setLayoutManager(new LinearLayoutManager(InputNilaiActivity.this));
         firestore = FirebaseFirestore.getInstance();
-        String uniqueCode = i.getStringExtra("UniqueCode");
-        firestore.collection("JoinMapel").whereEqualTo("KodeKelas", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        uniqueCode = i.getStringExtra("UniqueCode");
+        materi = i.getStringExtra("IDMateri");
+        firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot ds : task.getResult()) {
-
-                        firestore.collection("Siswa").document(ds.getString("Siswa")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("Nilai", 0);
+                        firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").document(ds.getString("UID")).collection("Nilai").document(materi).set(data);
+                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if (task.isSuccessful()) {
@@ -71,6 +76,7 @@ public class InputNilaiActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_input_nilai, menu);
@@ -89,11 +95,22 @@ public class InputNilaiActivity extends AppCompatActivity {
     }
 
     public void simpanNilai() {
+
         int jumlah = rvSiswa.getChildCount();
         for (int x = 0; x < jumlah; x++) {
             if (rvSiswa.findViewHolderForLayoutPosition(x) instanceof InputNilaiAdapter.ViewHolder) {
                 InputNilaiAdapter.ViewHolder viewHolder = (InputNilaiAdapter.ViewHolder) rvSiswa.findViewHolderForLayoutPosition(x);
-
+                Map<String, Object> data = new HashMap<>();
+                data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
+                firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").document(siswaClasses.get(x).getUID()).collection("Nilai").document(materi).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
+                        i.putExtra("UniqueCode", uniqueCode);
+                        startActivity(i);
+                        finish();
+                    }
+                });
             }
         }
     }

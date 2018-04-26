@@ -43,7 +43,7 @@ public class InputNilaiAdapter extends RecyclerView.Adapter<InputNilaiAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.tvNama.setText(siswa.get(position).getNama());
-
+        holder.etNilai.setText(String.valueOf(siswa.get(position).getNilai()));
     }
 
     @Override
@@ -52,8 +52,8 @@ public class InputNilaiAdapter extends RecyclerView.Adapter<InputNilaiAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNama;
-        EditText etNilai;
+        public TextView tvNama;
+        public EditText etNilai;
 
         public ViewHolder(View itemView) {
             super(itemView);

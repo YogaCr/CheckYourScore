@@ -7,13 +7,13 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class;
 public class SiswaClass {
     private String nama;
     private String UID;
-    private String Nilai;
+    private int Nilai = 0;
 
-    public String getNilai() {
+    public int getNilai() {
         return Nilai;
     }
 
-    public void setNilai(String nilai) {
+    public void setNilai(int nilai) {
         Nilai = nilai;
     }
 

@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.MapelClass;
@@ -40,6 +43,10 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
         holder.tvNamaMapel.setText(mapelList.get(position).getNama());
         holder.tvKelasMapel.setText(mapelList.get(position).getKelas());
         holder.ivIcon.setImageResource(mapelList.get(position).getIconResource());
+        RequestOptions requestOptions = new RequestOptions().centerCrop();
+        if (mapelList.get(position).getUrlSampul() != "") {
+            Glide.with(context).load(mapelList.get(position).getUrlSampul()).apply(requestOptions).into(holder.ivSampul);
+        }
         holder.cvMapel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +63,7 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView ivIcon;
+        public ImageView ivIcon, ivSampul;
         public TextView tvNamaMapel, tvKelasMapel;
         public CardView cvMapel;
 
@@ -66,6 +73,7 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
             tvNamaMapel = itemView.findViewById(R.id.tvRvNamaMapel);
             tvKelasMapel = itemView.findViewById(R.id.tvRvKelasMapel);
             cvMapel = itemView.findViewById(R.id.cv_mapel);
+            ivSampul = itemView.findViewById(R.id.ivRvSampulMapel);
         }
     }
 }

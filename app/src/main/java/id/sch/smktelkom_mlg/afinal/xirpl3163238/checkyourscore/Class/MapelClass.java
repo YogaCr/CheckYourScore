@@ -9,6 +9,15 @@ public class MapelClass {
     private String kelas;
     private String uniqueCode;
     private int iconResource;
+    private String urlSampul = "";
+
+    public String getUrlSampul() {
+        return urlSampul;
+    }
+
+    public void setUrlSampul(String urlSampul) {
+        this.urlSampul = urlSampul;
+    }
 
     public String getNama() {
         return nama;

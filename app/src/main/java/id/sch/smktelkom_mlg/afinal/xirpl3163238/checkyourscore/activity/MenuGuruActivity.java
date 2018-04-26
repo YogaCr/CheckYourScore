@@ -10,7 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -62,14 +62,7 @@ public class MenuGuruActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        firestore.collection("Guru").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    tvNamaGuru.setText(task.getResult().getString("Nama"));
-                }
-            }
-        });
+        tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
         getData();
 
         tvEmailGuru.setText(mAuth.getCurrentUser().getEmail());
@@ -113,13 +106,16 @@ public class MenuGuruActivity extends AppCompatActivity
                         MapelClass m = new MapelClass();
                         m.setNama(documentSnapshot.getString("Nama"));
                         m.setKelas(documentSnapshot.getString("Kelas"));
+                        if (documentSnapshot.contains("Sampul")) {
+                            m.setUrlSampul(documentSnapshot.getString("Sampul"));
+                        }
                         m.setIconResource(getResources().getIdentifier(documentSnapshot.getString("Icon"), "drawable", getPackageName()));
                         m.setUniqueCode(documentSnapshot.getId());
                         mapelList.add(m);
                     }
                     mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList);
                     mapelAdapter.notifyDataSetChanged();
-                    rvMapel.setLayoutManager(new GridLayoutManager(MenuGuruActivity.this, 3));
+                    rvMapel.setLayoutManager(new LinearLayoutManager(MenuGuruActivity.this));
                     rvMapel.setAdapter(mapelAdapter);
 
                 }

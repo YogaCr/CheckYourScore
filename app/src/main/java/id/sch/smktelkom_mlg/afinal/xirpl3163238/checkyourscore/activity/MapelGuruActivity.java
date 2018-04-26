@@ -115,19 +115,22 @@ public class MapelGuruActivity extends AppCompatActivity {
                     ctl.setTitle(task.getResult().getString("Nama"));
                     int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
                     ivIcon.setImageDrawable(getResources().getDrawable(resDraw));
-                    Glide.with(MapelGuruActivity.this).load(task.getResult().getString("Sampul")).listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            return false;
-                        }
+                    if (task.getResult().contains("Sampul")) {
+                        Glide.with(MapelGuruActivity.this).load(task.getResult().getString("Sampul")).listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                return false;
+                            }
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            progressDialog.hide();
-                            return false;
-                        }
-                    }).into(ivSampul);
-
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                progressDialog.hide();
+                                return false;
+                            }
+                        }).into(ivSampul);
+                    } else {
+                        progressDialog.hide();
+                    }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapelGuruActivity.this);
                     builder.setTitle("Error");

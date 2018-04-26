@@ -55,7 +55,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:hint="Nilai KKM" />
+                    android:hint="Nilai KKM"
+                    android:inputType="number|numberDecimal" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
