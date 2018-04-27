@@ -46,8 +46,7 @@
                     android:id="@+id/gambarmapelsiswa"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/kimia" />
+                    android:layout_gravity="center" />
 
             </FrameLayout>
 

@@ -44,6 +44,8 @@ public class MenuSiswaActivity extends AppCompatActivity
     FirebaseAuth mAuth;
     TextView tvNamaSiswa, tvEmailSiswa;
     RecyclerView rvMapelSiswa;
+    NavigationView navigationView;
+    View headerview;
     List<MapelClass> mapelList = new ArrayList<>();
     MapelAdapter mapelAdapter;
     FirebaseFirestore firestore;
@@ -56,6 +58,8 @@ public class MenuSiswaActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_siswa);
+        navigationView = findViewById(R.id.nav_view_siswa);
+        headerview = navigationView.getHeaderView(0);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Mohon Tunggu");
         progressDialog.setCanceledOnTouchOutside(false);
@@ -63,8 +67,10 @@ public class MenuSiswaActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         Toolbar toolbar = findViewById(R.id.toolbarsiswa);
         setSupportActionBar(toolbar);
-        tvNamaSiswa = findViewById(R.id.tvNamaSiswa);
-        tvEmailSiswa = findViewById(R.id.tvEmailSiswa);
+        tvNamaSiswa = headerview.findViewById(R.id.tvNmSiswa);
+        tvEmailSiswa = headerview.findViewById(R.id.tvEmSiswa);
+        tvNamaSiswa.setText(mAuth.getCurrentUser().getDisplayName());
+        tvEmailSiswa.setText(mAuth.getCurrentUser().getEmail());
         rvMapelSiswa = findViewById(R.id.rvMapelSiswa);
         firestore = FirebaseFirestore.getInstance();
 
@@ -132,7 +138,7 @@ public class MenuSiswaActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -150,35 +156,29 @@ public class MenuSiswaActivity extends AppCompatActivity
                                                        firestore.collection("Mapel").document(documentSnapshot.getString("Mapel")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                            @Override
                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                               if (task.isSuccessful()) {
-                                                                   Toast.makeText(MenuSiswaActivity.this, "Berhasil", Toast.LENGTH_SHORT).show();
-                                                                   MapelClass m = new MapelClass();
-                                                                   m.setNama(task.getResult().getString("Nama"));
-                                                                   m.setKelas(task.getResult().getString("Kelas"));
-                                                                   if (task.getResult().contains("Sampul")) {
-                                                                       m.setUrlSampul(task.getResult().getString("Sampul"));
-                                                                   }
-                                                                   m.setIconResource(getResources().getIdentifier(task.getResult().getString("Icon"), "drawable", getPackageName()));
-                                                                   m.setUniqueCode(task.getResult().getId());
-                                                                   mapelList.add(m);
-                                                                   mapelAdapter = new MapelAdapter(MenuSiswaActivity.this, mapelList, false);
-                                                                   mapelAdapter.notifyDataSetChanged();
-                                                                   rvMapelSiswa.setLayoutManager(new LinearLayoutManager(MenuSiswaActivity.this));
-                                                                   rvMapelSiswa.setAdapter(mapelAdapter);
+                                                               Toast.makeText(MenuSiswaActivity.this, "Berhasil", Toast.LENGTH_SHORT).show();
+                                                               MapelClass m = new MapelClass();
+                                                               m.setNama(task.getResult().getString("Nama"));
+                                                               m.setKelas(task.getResult().getString("Kelas"));
+                                                               if (task.getResult().contains("Sampul")) {
+                                                                   m.setUrlSampul(task.getResult().getString("Sampul"));
                                                                }
+                                                               m.setIconResource(getResources().getIdentifier(task.getResult().getString("Icon"), "drawable", getPackageName()));
+                                                               m.setUniqueCode(task.getResult().getId());
+                                                               mapelList.add(m);
+                                                               mapelAdapter = new MapelAdapter(MenuSiswaActivity.this, mapelList, false);
+                                                               mapelAdapter.notifyDataSetChanged();
+                                                               rvMapelSiswa.setLayoutManager(new LinearLayoutManager(MenuSiswaActivity.this));
+                                                               rvMapelSiswa.setAdapter(mapelAdapter);
                                                            }
                                                        });
-
                                                    }
                                                    progressDialog.hide();
                                                }
-
                                            }
                                        }
-
                 );
     }
-
 
     @Override
     public void onBackPressed() {
@@ -192,7 +192,6 @@ public class MenuSiswaActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_refresh, menu);
         return true;
     }
