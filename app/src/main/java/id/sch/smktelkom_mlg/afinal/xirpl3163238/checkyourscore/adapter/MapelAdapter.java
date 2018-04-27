@@ -17,6 +17,7 @@ import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.MapelClass;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelGuruActivity;
 
 /**
@@ -26,10 +27,12 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelGur
 public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> {
     Context context;
     List<MapelClass> mapelList;
+    boolean isGuru;
 
-    public MapelAdapter(Context context, List<MapelClass> mapelList) {
+    public MapelAdapter(Context context, List<MapelClass> mapelList, boolean isGuru) {
         this.context = context;
         this.mapelList = mapelList;
+        this.isGuru = isGuru;
     }
 
     @Override
@@ -50,9 +53,15 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
         holder.cvMapel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(context, MapelGuruActivity.class);
-                i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
-                context.startActivity(i);
+                if (isGuru) {
+                    Intent i = new Intent(context, MapelGuruActivity.class);
+                    i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
+                    context.startActivity(i);
+                } else {
+                    Intent i = new Intent(context, MapelActivity.class);
+                    i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
+                    context.startActivity(i);
+                }
             }
         });
     }

@@ -2,6 +2,7 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -113,7 +114,7 @@ public class MenuGuruActivity extends AppCompatActivity
                         m.setUniqueCode(documentSnapshot.getId());
                         mapelList.add(m);
                     }
-                    mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList);
+                    mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList, true);
                     mapelAdapter.notifyDataSetChanged();
                     rvMapel.setLayoutManager(new LinearLayoutManager(MenuGuruActivity.this));
                     rvMapel.setAdapter(mapelAdapter);
@@ -149,8 +150,12 @@ public class MenuGuruActivity extends AppCompatActivity
 
         if (id == R.id.nav_logOut) {
             mAuth.signOut();
+            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("IS_GURU");
+            editor.apply();
             Intent i = new Intent(MenuGuruActivity.this, LoginActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
             finish();
         }

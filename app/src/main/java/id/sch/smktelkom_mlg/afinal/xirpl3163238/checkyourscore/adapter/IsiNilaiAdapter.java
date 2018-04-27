@@ -30,7 +30,7 @@ public class IsiNilaiAdapter extends RecyclerView.Adapter<IsiNilaiAdapter.ViewHo
     @NonNull
     @Override
     public IsiNilaiAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.activity_isi_nilai_guru, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.isi_nilai_guru, parent, false);
         return new ViewHolder(v);
     }
 

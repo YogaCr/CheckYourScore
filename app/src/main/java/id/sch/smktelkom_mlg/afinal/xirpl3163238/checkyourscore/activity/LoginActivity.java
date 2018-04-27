@@ -91,17 +91,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         animRightLeftEntrance = AnimationUtils.loadAnimation(this, R.anim.righttoleftentrance);
         animRightLeftExit = AnimationUtils.loadAnimation(this, R.anim.righttoleftexit);
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        connectingGoogleApiClient();
+
         findViewById(R.id.btnGoogleSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (googleApiClient.isConnected()) {
+                    Auth.GoogleSignInApi.signOut(googleApiClient);
+                }
                 Intent googleLogin = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
                 startActivityForResult(googleLogin, RC_Login);
             }
@@ -117,18 +114,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     data.put("Nama", mAuth.getCurrentUser().getDisplayName());
                     if (guru) {
                         firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
-                        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        Auth.GoogleSignInApi.signOut(googleApiClient);
-                        startActivity(i);
-                        finish();
+                        afterLoginGuru();
                     } else {
                         firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
-                        Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        Auth.GoogleSignInApi.signOut(googleApiClient);
-                        startActivity(i);
-                        finish();
+                        afterLoginSiswa();
                     }
 
                 }
@@ -141,15 +130,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     if (mAuth.getCurrentUser().isEmailVerified()) {
                         if (sharedPreferences.contains(pref_key)) {
                             if (sharedPreferences.getBoolean(pref_key, true)) {
-                                Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(i);
-                                finish();
+                                afterLoginGuru();
                             } else {
-                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(i);
-                                finish();
+                                afterLoginSiswa();
                             }
                         }
                     } else {
@@ -162,6 +145,36 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
             }
         };
+    }
+
+
+    void connectingGoogleApiClient() {
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
+
+    void afterLoginSiswa() {
+        Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
+    }
+
+    void afterLoginGuru() {
+
+        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+
+
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
     }
 
     @Override
@@ -196,11 +209,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                 Map<String, Object> data = new HashMap<>();
                                                 data.put("Nama", mAuth.getCurrentUser().getDisplayName());
                                                 firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
-                                                Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                Auth.GoogleSignInApi.signOut(googleApiClient);
-                                                startActivity(i);
-                                                finish();
+                                                afterLoginGuru();
                                             } else {
                                                 layoutLogin.startAnimation(animRightLeftExit);
                                                 layoutSetupPassword.startAnimation(animRightLeftEntrance);
@@ -211,11 +220,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
                                                 UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
                                                 mAuth.getCurrentUser().updateProfile(profileChangeRequest);
-                                                Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                Auth.GoogleSignInApi.signOut(googleApiClient);
-                                                startActivity(i);
-                                                finish();
+                                                afterLoginGuru();
                                             }
                                         }
                                     }
@@ -240,11 +245,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                 Map<String, Object> data = new HashMap<>();
                                                 data.put("Nama", mAuth.getCurrentUser().getDisplayName());
                                                 firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
-                                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                Auth.GoogleSignInApi.signOut(googleApiClient);
-                                                startActivity(i);
-                                                finish();
+                                                afterLoginSiswa();
                                             } else {
                                                 layoutLogin.startAnimation(animRightLeftExit);
                                                 layoutSetupPassword.startAnimation(animRightLeftEntrance);
@@ -255,11 +256,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             if (mAuth.getCurrentUser().getDisplayName() != task.getResult().getString("Nama")) {
                                                 UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(task.getResult().getString("Nama")).build();
                                                 mAuth.getCurrentUser().updateProfile(profileChangeRequest);
-                                                Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-                                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                Auth.GoogleSignInApi.signOut(googleApiClient);
-                                                startActivity(i);
-                                                finish();
+                                                afterLoginSiswa();
                                             }
                                         }
                                     }
@@ -346,6 +343,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
                             } else {
                                 editor.putBoolean(pref_key, false);
+                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
                             }
                             editor.apply();
                             progressBarLogin.setVisibility(View.INVISIBLE);
@@ -383,15 +381,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             editor.apply();
                             if (mAuth.getCurrentUser().isEmailVerified()) {
                                 if (guru) {
-                                    Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(i);
-                                    finish();
+                                    afterLoginGuru();
                                 } else {
-                                    Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(i);
-                                    finish();
+                                    afterLoginSiswa();
                                 }
                             } else {
                                 progressBarLogin.setVisibility(View.INVISIBLE);
@@ -419,10 +411,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mAuth.getCurrentUser().reload();
                 if (mAuth.getCurrentUser().isEmailVerified()) {
                     if (sharedPreferences.getBoolean(pref_key, true)) {
-                        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
-                        finish();
+                        afterLoginGuru();
+                    } else {
+                        afterLoginSiswa();
                     }
                 } else {
                     Snackbar.make(findViewById(R.id.loginView), "Email anda belum diverifikasi", Snackbar.LENGTH_SHORT).show();
