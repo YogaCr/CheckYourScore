@@ -52,6 +52,7 @@ public class MapelGuruActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
     ProgressDialog progressDialog;
     FloatingActionButton fabTambahNilai;
+    String uniqueCode;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -60,6 +61,7 @@ public class MapelGuruActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapel_guru);
         i = getIntent();
+        uniqueCode = i.getStringExtra("UniqueCode");
         tabLayout = findViewById(R.id.tabs);
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
@@ -68,24 +70,21 @@ public class MapelGuruActivity extends AppCompatActivity {
         ivIcon = findViewById(R.id.gambarmapel);
         ivSampul = findViewById(R.id.ivSampul);
         toolbar = findViewById(R.id.tb);
-
+        setSupportActionBar(toolbar);
         ctl = findViewById(R.id.ctl);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
-
         firestore = FirebaseFirestore.getInstance();
-        setSupportActionBar(toolbar);
 
-        final String uniqueCode = i.getStringExtra("UniqueCode");
         fabTambahNilai = findViewById(R.id.fab_add_nilai);
         fabTambahNilai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MapelGuruActivity.this, TambahBabActivity.class);
-                i.putExtra("UniqueCode", uniqueCode);
-                startActivity(i);
+                Intent in = new Intent(MapelGuruActivity.this, TambahBabActivity.class);
+                in.putExtra("UniqueCode", uniqueCode);
+                startActivity(in);
             }
         });
         // Create the adapter that will return a fragment for each of the three
@@ -111,7 +110,7 @@ public class MapelGuruActivity extends AppCompatActivity {
 
     void getData() {
         progressDialog.show();
-        firestore.collection("Mapel").document(i.getStringExtra("UniqueCode")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {

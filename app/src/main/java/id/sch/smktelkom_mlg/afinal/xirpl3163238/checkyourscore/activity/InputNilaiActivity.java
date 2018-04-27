@@ -47,14 +47,14 @@ public class InputNilaiActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         uniqueCode = i.getStringExtra("UniqueCode");
         materi = i.getStringExtra("IDMateri");
-        firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot ds : task.getResult()) {
                         Map<String, Object> data = new HashMap<>();
                         data.put("Nilai", 0);
-                        firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").document(ds.getString("UID")).collection("Nilai").document(materi).set(data);
+                        firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(ds.getString("UID")).set(data);
                         firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -107,7 +107,7 @@ public class InputNilaiActivity extends AppCompatActivity {
                 } else {
                     data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
                 }
-                firestore.collection("Mapel").document(uniqueCode).collection("JoinSiswa").document(siswaClasses.get(x).getUID()).collection("Nilai").document(materi).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(siswaClasses.get(x).getUID()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
