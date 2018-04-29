@@ -51,6 +51,9 @@
             android:theme="@style/NoActionBar" />
         <activity android:name=".activity.EditMapelActivity" />
         <activity android:name=".activity.PesanRemidiActivity"></activity>
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="Tentang"></activity>
     </application>
 
 </manifest>
