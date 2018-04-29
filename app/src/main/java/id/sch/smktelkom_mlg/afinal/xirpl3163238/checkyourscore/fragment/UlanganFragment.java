@@ -1,6 +1,7 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -106,14 +107,18 @@ public class UlanganFragment extends Fragment {
                     });
                     tvNone.setVisibility(View.INVISIBLE);
                 }
-                Intent in = new Intent(getContext(), MapelActivity.class);
-                in.putExtra("UniqueCode", uniqueCode);
-                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PendingIntent intent = PendingIntent.getActivity(getContext(), 0, in, 0);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext()).setContentTitle("Nilai telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
-                NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(NOTIFICATION_ID, builder.build());
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    Intent in = new Intent(getContext(), MapelActivity.class);
+                    in.putExtra("UniqueCode", uniqueCode);
+                    in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    PendingIntent intent = PendingIntent.getActivity(getContext(), 0, in, 0);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext()).setContentTitle("Nilai telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    Notification notification = builder.build();
+                    notification.flags |= Notification.FLAG_AUTO_CANCEL;
+                    notificationManager.notify(NOTIFICATION_ID, builder.build());
 
+                }
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
@@ -127,13 +132,5 @@ public class UlanganFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.siswa_refresh:
-                getData();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 }

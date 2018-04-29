@@ -163,8 +163,6 @@ public class MapelActivity extends AppCompatActivity {
             case R.id.siswa_keluar:
                 keluar();
                 return true;
-            case R.id.siswa_refresh:
-                return false;
         }
         return super.onOptionsItemSelected(item);
     }

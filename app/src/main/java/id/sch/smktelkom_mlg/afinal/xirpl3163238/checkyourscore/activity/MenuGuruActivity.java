@@ -178,6 +178,10 @@ public class MenuGuruActivity extends AppCompatActivity
             Intent x = new Intent(MenuGuruActivity.this, EditProfileActivity.class);
             startActivity(x);
             return true;
+        } else if (id == R.id.nav_tentang) {
+            Intent x = new Intent(MenuGuruActivity.this, AboutActivity.class);
+            startActivity(x);
+            return true;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
