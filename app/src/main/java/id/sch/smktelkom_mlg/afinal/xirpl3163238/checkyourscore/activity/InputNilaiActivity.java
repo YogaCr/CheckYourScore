@@ -1,6 +1,8 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -55,7 +57,7 @@ public class InputNilaiActivity extends AppCompatActivity {
                         Map<String, Object> data = new HashMap<>();
                         data.put("Nilai", 0);
                         firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(ds.getString("UID")).set(data);
-                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        firestore.collection("User").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                 if (task.isSuccessful()) {
@@ -91,8 +93,34 @@ public class InputNilaiActivity extends AppCompatActivity {
             case R.id.inputnilaiSave:
                 simpanNilai();
                 return true;
+            case R.id.inputnilaiDelete:
+                hapusBab();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void hapusBab() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Yakin mau menghapus?");
+        final AlertDialog alertDialog = builder.create();
+        builder.setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).delete();
+                Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
+                i.putExtra("UniqueCode", uniqueCode);
+                startActivity(i);
+                finish();
+            }
+        });
+        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
     }
 
     public void simpanNilai() {

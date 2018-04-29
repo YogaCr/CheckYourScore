@@ -1,6 +1,8 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.TugasGuruClass;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.IsiNilaiGuruActivity;
 
 /**
  * Created by Sakata Yoga on 26/04/2018.
@@ -25,6 +28,7 @@ public class TugasGuruAdapter extends RecyclerView.Adapter<TugasGuruAdapter.View
     public TugasGuruAdapter(List<TugasGuruClass> guruClassList, Context context) {
         this.guruClassList = guruClassList;
         this.context = context;
+
     }
 
     @NonNull
@@ -35,12 +39,17 @@ public class TugasGuruAdapter extends RecyclerView.Adapter<TugasGuruAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        Intent x = ((Activity) context).getIntent();
+        final String uniqueCode = x.getStringExtra("UniqueCode");
         holder.tvNama.setText(guruClassList.get(position).getNama());
         holder.cvTugas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent i = new Intent(context, IsiNilaiGuruActivity.class);
+                i.putExtra("idBab", guruClassList.get(position).getID());
+                i.putExtra("uniqueCode", uniqueCode);
+                context.startActivity(i);
             }
         });
     }

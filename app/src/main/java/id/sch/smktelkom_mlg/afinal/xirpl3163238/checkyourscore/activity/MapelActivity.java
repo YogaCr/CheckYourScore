@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.SubtitleCollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -47,9 +47,10 @@ public class MapelActivity extends AppCompatActivity {
     ImageView ivIcon, ivSampul;
     Toolbar toolbar;
     TabLayout tabLayout;
-    CollapsingToolbarLayout ctl;
+    SubtitleCollapsingToolbarLayout ctl;
     NestedScrollView nestedScrollView;
     ProgressDialog progressDialog;
+    Double KKM;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -61,6 +62,7 @@ public class MapelActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabs);
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
+        tabLayout.getTabAt(2).setIcon(R.drawable.icon_nilaiulangan);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         ivIcon = findViewById(R.id.gambarmapelsiswa);
@@ -92,6 +94,7 @@ public class MapelActivity extends AppCompatActivity {
         i = getIntent();
         uniqueCode = i.getStringExtra("UniqueCode");
         getData();
+
     }
 
     void getData() {
@@ -101,6 +104,7 @@ public class MapelActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     ctl.setTitle(task.getResult().getString("Nama"));
+                    KKM = task.getResult().getDouble("KKM");
                     int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
                     ivIcon.setImageDrawable(getResources().getDrawable(resDraw));
                     if (task.getResult().contains("Sampul")) {
@@ -119,6 +123,12 @@ public class MapelActivity extends AppCompatActivity {
                     } else {
 
                     }
+                    firestore.collection("User").document(task.getResult().getString("UID Guru")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            ctl.setSubtitle(task.getResult().getString("Nama"));
+                        }
+                    });
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapelActivity.this);
                     builder.setTitle("Error");

@@ -15,7 +15,9 @@ import android.widget.Spinner;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.Map;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class TambahBabActivity extends AppCompatActivity {
+    @ServerTimestamp
     Spinner spnLinkRemidi, spnJenis;
     Intent i;
     Button btnSelesai;
@@ -77,6 +80,7 @@ public class TambahBabActivity extends AppCompatActivity {
                 } else {
                     progressDialog.show();
                     Map<String, Object> data = new HashMap<>();
+                    data.put("WaktuBuat", FieldValue.serverTimestamp());
                     data.put("Nama", etNamaBab.getText().toString());
                     if (spnJenis.getSelectedItemPosition() == 0) {
                         data.put("Tugas", true);

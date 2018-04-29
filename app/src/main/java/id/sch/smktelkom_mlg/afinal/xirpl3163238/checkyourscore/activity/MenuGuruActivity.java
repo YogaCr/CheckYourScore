@@ -143,6 +143,12 @@ public class MenuGuruActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -158,6 +164,11 @@ public class MenuGuruActivity extends AppCompatActivity
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
             finish();
+            return true;
+        } else if (id == R.id.nav_Profil) {
+            Intent x = new Intent(MenuGuruActivity.this, EditProfileActivity.class);
+            startActivity(x);
+            return true;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

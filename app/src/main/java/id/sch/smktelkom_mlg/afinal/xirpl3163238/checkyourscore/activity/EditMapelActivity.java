@@ -17,12 +17,14 @@ import android.widget.Spinner;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -31,8 +33,9 @@ import java.util.UUID;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.CustomAdapter;
 
-public class BuatMapelActivity extends AppCompatActivity {
+public class EditMapelActivity extends AppCompatActivity {
     private final int PICK_IMAGE_REQUEST = 71;
+    String uniqueCode;
     FirebaseFirestore firestore;
     FirebaseStorage storage;
     LinearLayout layoutBuatMapel;
@@ -46,8 +49,8 @@ public class BuatMapelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_buat_mapel);
-
+        setContentView(R.layout.activity_edit_mapel);
+        uniqueCode = getIntent().getStringExtra("UniqueCode");
         layoutBuatMapel = findViewById(R.id.layoutBuatMapel);
         spin = findViewById(R.id.spinnerIcon);
         ivSampul = findViewById(R.id.ivSampul);
@@ -59,6 +62,7 @@ public class BuatMapelActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        getData();
         findViewById(R.id.btnPilihGambar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +82,7 @@ public class BuatMapelActivity extends AppCompatActivity {
                 } else if (etKKM.getText().toString().isEmpty()) {
                     etKKM.setError("Tolong masukkan KKM");
                 } else {
-                    final ProgressDialog progressDialog = new ProgressDialog(BuatMapelActivity.this);
+                    final ProgressDialog progressDialog = new ProgressDialog(EditMapelActivity.this);
                     progressDialog.setMessage("Sedang Mengupload");
                     progressDialog.show();
                     final Map<String, Object> data = new HashMap<>();
@@ -109,7 +113,7 @@ public class BuatMapelActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    Intent i = new Intent(BuatMapelActivity.this, MenuGuruActivity.class);
+                                                    Intent i = new Intent(EditMapelActivity.this, MenuGuruActivity.class);
                                                     startActivity(i);
                                                     finish();
                                                 }
@@ -129,7 +133,7 @@ public class BuatMapelActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Intent i = new Intent(BuatMapelActivity.this, MenuGuruActivity.class);
+                                    Intent i = new Intent(EditMapelActivity.this, MenuGuruActivity.class);
                                     startActivity(i);
                                     finish();
                                 }
@@ -140,6 +144,20 @@ public class BuatMapelActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    void getData() {
+        firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                etNama.setText(task.getResult().getString("Nama"));
+                etKelas.setText(task.getResult().getString("Kelas"));
+                etKKM.setText(String.valueOf(task.getResult().getDouble("KKM")));
+                int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
+                int location = Arrays.asList(icons).indexOf(resDraw);
+                spin.setSelection(location);
+            }
+        });
     }
 
     @Override

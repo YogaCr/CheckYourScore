@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -53,6 +52,12 @@ public class MenuSiswaActivity extends AppCompatActivity
     EditText etKodeMapel;
     AlertDialog.Builder builder;
     AlertDialog alertDialog;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tvNamaSiswa.setText(mAuth.getCurrentUser().getDisplayName());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +104,20 @@ public class MenuSiswaActivity extends AppCompatActivity
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         if (task.getResult().exists()) {
-
                                             Map<String, Object> data = new HashMap<>();
                                             data.put("UID", mAuth.getCurrentUser().getUid());
                                             data.put("Mapel", task.getResult().getId());
                                             firestore.collection("JoinSiswa").add(data);
+                                            firestore.collection("Mapel").document(kode).collection("Bab").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    for (DocumentSnapshot ds : task.getResult()) {
+                                                        Map<String, Double> map = new HashMap<>();
+                                                        map.put("Nilai", 0.0);
+                                                        firestore.collection("Mapel").document(kode).collection("Bab").document(ds.getId()).collection("Nilai").document(mAuth.getCurrentUser().getUid()).set(map);
+                                                    }
+                                                }
+                                            });
                                             getData();
 
                                         } else {
@@ -137,8 +151,6 @@ public class MenuSiswaActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -156,7 +168,6 @@ public class MenuSiswaActivity extends AppCompatActivity
                                                        firestore.collection("Mapel").document(documentSnapshot.getString("Mapel")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                            @Override
                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                               Toast.makeText(MenuSiswaActivity.this, "Berhasil", Toast.LENGTH_SHORT).show();
                                                                MapelClass m = new MapelClass();
                                                                m.setNama(task.getResult().getString("Nama"));
                                                                m.setKelas(task.getResult().getString("Kelas"));
@@ -224,7 +235,11 @@ public class MenuSiswaActivity extends AppCompatActivity
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
                 finish();
-                break;
+                return true;
+            case R.id.nav_Profil:
+                Intent x = new Intent(MenuSiswaActivity.this, EditProfileActivity.class);
+                startActivity(x);
+                return true;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

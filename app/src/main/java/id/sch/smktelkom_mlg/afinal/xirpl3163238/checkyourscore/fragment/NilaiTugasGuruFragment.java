@@ -33,7 +33,7 @@ public class NilaiTugasGuruFragment extends Fragment {
 
     RecyclerView rvTugas;
     TugasGuruAdapter adapter;
-    List<TugasGuruClass> list = new ArrayList<>();
+    List<TugasGuruClass> listTugas = new ArrayList<>();
     FirebaseFirestore firestore;
     String uniqueCode;
     TextView tvNone;
@@ -45,20 +45,28 @@ public class NilaiTugasGuruFragment extends Fragment {
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getData();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_nilai_tugas_guru, container, false);
+        setHasOptionsMenu(true);
         rvTugas = v.findViewById(R.id.rvTugasGuru);
         tvNone = v.findViewById(R.id.tvTugasGuruNone);
         pbFrag = v.findViewById(R.id.pbFragTugasGuru);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
-        getData();
+        adapter = new TugasGuruAdapter(listTugas, getContext());
         return v;
     }
 
     void getData() {
-        list.clear();
+        listTugas.clear();
+        adapter.notifyDataSetChanged();
         tvNone.setVisibility(View.INVISIBLE);
         pbFrag.setVisibility(View.VISIBLE);
         firestore = FirebaseFirestore.getInstance();
@@ -71,9 +79,9 @@ public class NilaiTugasGuruFragment extends Fragment {
                             TugasGuruClass guruClass = new TugasGuruClass();
                             guruClass.setNama(ds.getString("Nama"));
                             guruClass.setID(ds.getId());
-                            list.add(guruClass);
+                            listTugas.add(guruClass);
                         }
-                        adapter = new TugasGuruAdapter(list, getContext());
+                        adapter = new TugasGuruAdapter(listTugas, getContext());
                         adapter.notifyDataSetChanged();
                         rvTugas.setLayoutManager(new LinearLayoutManager(getContext()));
                         rvTugas.setAdapter(adapter);
@@ -90,7 +98,7 @@ public class NilaiTugasGuruFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.menuRefresh:
+            case R.id.mapelRefresh:
                 getData();
                 return true;
         }

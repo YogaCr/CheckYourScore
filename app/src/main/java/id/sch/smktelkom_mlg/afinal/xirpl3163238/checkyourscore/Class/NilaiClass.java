@@ -6,14 +6,33 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class;
 
 public class NilaiClass {
     private String deskripsi;
-    private int nilai;
+    private Double nilai;
     private boolean status;
+    private String id;
+    private String mapId;
 
-    public NilaiClass(String deskripsi, int nilai, boolean status) {
-
+    public NilaiClass(String deskripsi, Double nilai, boolean status, String id, String mapId) {
         this.deskripsi = deskripsi;
         this.nilai = nilai;
         this.status = status;
+        this.id = id;
+        this.mapId = mapId;
+    }
+
+    public String getMapId() {
+        return mapId;
+    }
+
+    public void setMapId(String mapId) {
+        this.mapId = mapId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDeskripsi() {
@@ -24,11 +43,11 @@ public class NilaiClass {
         this.deskripsi = deskripsi;
     }
 
-    public int getNilai() {
+    public Double getNilai() {
         return nilai;
     }
 
-    public void setNilai(int nilai) {
+    public void setNilai(Double nilai) {
         this.nilai = nilai;
     }
 

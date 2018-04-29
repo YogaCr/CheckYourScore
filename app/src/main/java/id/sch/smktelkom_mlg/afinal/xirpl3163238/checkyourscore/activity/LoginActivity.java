@@ -112,11 +112,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     mAuth.getCurrentUser().updatePassword(etSetupPassword.getText().toString());
                     Map<String, Object> data = new HashMap<>();
                     data.put("Nama", mAuth.getCurrentUser().getDisplayName());
+                    firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                     if (guru) {
-                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
                         afterLoginGuru();
                     } else {
-                        firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
                         afterLoginSiswa();
                     }
 
@@ -161,17 +160,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     void afterLoginSiswa() {
         Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
-
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
     }
 
     void afterLoginGuru() {
-
         Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
-
-
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
@@ -194,7 +189,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         if (guru) {
                             editor.putBoolean(pref_key, true);
                             editor.apply();
-                            firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            firestore.collection("User").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     if (task.isSuccessful()) {
@@ -208,7 +203,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             if (useEmailPassword) {
                                                 Map<String, Object> data = new HashMap<>();
                                                 data.put("Nama", mAuth.getCurrentUser().getDisplayName());
-                                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
+                                                firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                                                 afterLoginGuru();
                                             } else {
                                                 layoutLogin.startAnimation(animRightLeftExit);
@@ -230,7 +225,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         } else {
                             editor.putBoolean(pref_key, false);
                             editor.apply();
-                            firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            firestore.collection("User").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     if (task.isSuccessful()) {
@@ -244,7 +239,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                             if (useEmailPassword) {
                                                 Map<String, Object> data = new HashMap<>();
                                                 data.put("Nama", mAuth.getCurrentUser().getDisplayName());
-                                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
+                                                firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                                                 afterLoginSiswa();
                                             } else {
                                                 layoutLogin.startAnimation(animRightLeftExit);
@@ -336,14 +331,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             mAuth.getCurrentUser().updateProfile(userProfileChangeRequest);
                             Map<String, Object> data = new HashMap<>();
                             data.put("Nama", etNamaSignUp.getText().toString());
+                            firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                             mAuth.getCurrentUser().sendEmailVerification();
                             editor = sharedPreferences.edit();
                             if (guru) {
                                 editor.putBoolean(pref_key, true);
-                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Guru").document(mAuth.getCurrentUser().getUid()).set(data);
                             } else {
                                 editor.putBoolean(pref_key, false);
-                                firestore.collection("User").document("pdFyA0m4RqWadX15WmdP").collection("Siswa").document(mAuth.getCurrentUser().getUid()).set(data);
                             }
                             editor.apply();
                             progressBarLogin.setVisibility(View.INVISIBLE);
@@ -438,5 +432,4 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Snackbar.make(findViewById(R.id.loginView), connectionResult.getErrorMessage(), Snackbar.LENGTH_SHORT).show();
     }
-
 }

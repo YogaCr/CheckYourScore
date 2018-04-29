@@ -8,8 +8,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.SubtitleCollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -43,12 +44,13 @@ public class MapelGuruActivity extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
+    TextView tvCode;
     FirebaseFirestore firestore;
     Intent i;
     ImageView ivIcon, ivSampul;
     Toolbar toolbar;
     TabLayout tabLayout;
-    CollapsingToolbarLayout ctl;
+    SubtitleCollapsingToolbarLayout ctl;
     NestedScrollView nestedScrollView;
     ProgressDialog progressDialog;
     FloatingActionButton fabTambahNilai;
@@ -57,14 +59,24 @@ public class MapelGuruActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        getData();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapel_guru);
         i = getIntent();
+
         uniqueCode = i.getStringExtra("UniqueCode");
+        tvCode = findViewById(R.id.tvUniqueCode);
+        tvCode.setText("Kode : " + uniqueCode);
         tabLayout = findViewById(R.id.tabs);
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
+        tabLayout.getTabAt(2).setIcon(R.drawable.icon_nilaiulangan);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         ivIcon = findViewById(R.id.gambarmapel);
@@ -133,6 +145,12 @@ public class MapelGuruActivity extends AppCompatActivity {
                     } else {
 
                     }
+                    firestore.collection("User").document(task.getResult().getString("UID Guru")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            ctl.setSubtitle(task.getResult().getString("Nama"));
+                        }
+                    });
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapelGuruActivity.this);
                     builder.setTitle("Error");
@@ -152,7 +170,7 @@ public class MapelGuruActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_refresh, menu);
+        getMenuInflater().inflate(R.menu.menu_mapel_guru, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -160,11 +178,45 @@ public class MapelGuruActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.menuRefresh:
+            case R.id.mapelRefresh:
                 getData();
+                return false;
+            case R.id.mapelEdit:
+                Intent in = new Intent(this, EditMapelActivity.class);
+                in.putExtra("UniqueCode", uniqueCode);
+                startActivity(in);
+                return true;
+            case R.id.mapelDelete:
+                hapusMapel();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void hapusMapel() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Yakin mau hapus?");
+        builder.setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                firestore.collection("Mapel").document(uniqueCode).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent i = new Intent(MapelGuruActivity.this, MenuGuruActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+                        finish();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                builder.create().dismiss();
+            }
+        });
+        builder.show();
     }
 
     /**

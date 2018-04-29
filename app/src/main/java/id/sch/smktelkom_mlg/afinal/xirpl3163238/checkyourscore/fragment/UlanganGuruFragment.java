@@ -50,6 +50,7 @@ public class UlanganGuruFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_ulangan_guru, container, false);
+        setHasOptionsMenu(true);
         rvUlangan = v.findViewById(R.id.rvUlanganGuru);
         progressBar = v.findViewById(R.id.pbFragUlanganGuru);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
@@ -91,7 +92,7 @@ public class UlanganGuruFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.menuRefresh:
+            case R.id.mapelRefresh:
                 getData();
                 return true;
         }

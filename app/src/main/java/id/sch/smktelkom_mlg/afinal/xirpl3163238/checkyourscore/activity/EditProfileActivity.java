@@ -1,4 +1,4 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -13,11 +13,12 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -25,9 +26,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -35,7 +39,7 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
     FirebaseStorage storage;
     StorageReference storageReference;
-    private TextView tvNamaPengguna;
+    FirebaseAuth auth;
     private ImageButton EditProfilGambar, GantiNamaPengguna, SelesaiNamaPengguna;
     private EditText EditNamaPengguna;
     private CircleImageView gambarprofil;
@@ -45,20 +49,22 @@ public class EditProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-
+        auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         firestore = FirebaseFirestore.getInstance();
         EditProfilGambar = findViewById(R.id.btnEditProfilGambar);
         GantiNamaPengguna = findViewById(R.id.GantiNamaPengguna);
         SelesaiNamaPengguna = findViewById(R.id.SelesaiNamaPengguna);
-        tvNamaPengguna = findViewById(R.id.tvNamaPengguna);
         EditNamaPengguna = findViewById(R.id.EditNamaPengguna);
+
         gambarprofil = findViewById(R.id.GambarProfil);
+        EditNamaPengguna.setText(auth.getCurrentUser().getDisplayName());
         GantiNamaPengguna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditNamaPengguna.setInputType(InputType.TYPE_CLASS_TEXT);
+
                 SelesaiNamaPengguna.setVisibility(View.VISIBLE);
                 GantiNamaPengguna.setVisibility(View.INVISIBLE);
             }
@@ -66,9 +72,14 @@ public class EditProfileActivity extends AppCompatActivity {
         SelesaiNamaPengguna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditNamaPengguna.setInputType(InputType.TYPE_NULL);
-                SelesaiNamaPengguna.setVisibility(View.INVISIBLE);
-                GantiNamaPengguna.setVisibility(View.VISIBLE);
+                if (EditNamaPengguna.getText().toString().isEmpty()) {
+                    EditNamaPengguna.setError("Tolong isi nama anda");
+                } else {
+                    EditNamaPengguna.setInputType(InputType.TYPE_NULL);
+                    SelesaiNamaPengguna.setVisibility(View.INVISIBLE);
+                    GantiNamaPengguna.setVisibility(View.VISIBLE);
+                    gantiNama();
+                }
             }
         });
         EditProfilGambar.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +88,16 @@ public class EditProfileActivity extends AppCompatActivity {
                 PilihGambar();
             }
         });
+    }
+
+    void gantiNama() {
+        String nama = EditNamaPengguna.getText().toString();
+        Map<String, Object> data = new HashMap<>();
+        data.put("Nama", nama);
+        firestore.collection("User").document(auth.getCurrentUser().getUid()).update(data);
+        UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(nama).build();
+        auth.getCurrentUser().updateProfile(changeRequest);
+        EditNamaPengguna.setFocusable(false);
     }
 
     @SuppressLint("NewApi")

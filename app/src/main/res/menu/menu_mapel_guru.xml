@@ -2,12 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/inputnilaiSave"
-        android:icon="@drawable/icon_save"
+        android:id="@+id/mapelRefresh"
+        android:icon="@drawable/icon_refresh"
         android:title=""
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
     <item
-        android:id="@+id/inputnilaiDelete"
+        android:id="@+id/mapelEdit"
+        android:icon="@drawable/icon_edit_putih"
+        android:title=""
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/mapelDelete"
         android:icon="@drawable/icon_delete"
         android:title=""
         app:showAsAction="always" />

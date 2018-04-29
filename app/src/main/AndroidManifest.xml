@@ -39,12 +39,18 @@
             android:name=".activity.TambahBabActivity"
             android:label="Tambah Bab"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".activity.InputNilaiActivity"
             android:label="Input Nilai"
             android:theme="@style/AppTheme" />
-        <!--<activity android:name=".EditProfileActivity"></activity>-->
+        <activity
+            android:name=".activity.EditProfileActivity"
+            android:label="Edit Profil" />
+        <activity
+            android:name=".activity.IsiNilaiGuruActivity"
+            android:theme="@style/NoActionBar" />
+        <activity android:name=".activity.EditMapelActivity" />
+        <activity android:name=".activity.PesanRemidiActivity"></activity>
     </application>
 
 </manifest>

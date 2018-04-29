@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.EditProfileActivity">
+    tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.EditProfileActivity">
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -20,7 +20,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/GambarProfil"
             android:layout_width="180dp"
-            android:layout_height="180dp" />
+            android:layout_height="180dp"
+            android:src="@drawable/icon_profil" />
 
         <LinearLayout
             android:layout_width="180dp"
@@ -35,7 +36,7 @@
                 android:layout_gravity="right"
                 android:background="@drawable/bg_bulat"
                 android:padding="10dp"
-                android:src="@drawable/ic_menu_camera" />
+                android:src="@drawable/icon_camera" />
         </LinearLayout>
     </FrameLayout>
 
