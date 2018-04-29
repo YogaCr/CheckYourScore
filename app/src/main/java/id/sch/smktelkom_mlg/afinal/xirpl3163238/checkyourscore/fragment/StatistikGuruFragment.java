@@ -112,7 +112,6 @@ public class StatistikGuruFragment extends Fragment {
                                         x++;
                                     }
                                     Double rata = nil / x;
-                                    Toast.makeText(getContext(), nama + String.valueOf(rata), Toast.LENGTH_SHORT).show();
                                     NilaiGrafikClass nilaiGrafikClass = new NilaiGrafikClass();
                                     nilaiGrafikClass.setNama(nama);
                                     nilaiGrafikClass.setNilai(rata);

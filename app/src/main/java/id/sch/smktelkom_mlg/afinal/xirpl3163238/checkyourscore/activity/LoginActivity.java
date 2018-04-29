@@ -72,8 +72,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAuth = FirebaseAuth.getInstance();
 
+        mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         layoutPilihLogin = findViewById(R.id.PilihLogin);
         layoutLogin = findViewById(R.id.LoginLayout);
@@ -144,6 +144,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
             }
         };
+        findViewById(R.id.tvKembaliPilih).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutLogin.startAnimation(animRightLeftExit);
+                layoutPilihLogin.startAnimation(animRightLeftEntrance);
+                layoutLogin.setVisibility(View.INVISIBLE);
+                layoutPilihLogin.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
