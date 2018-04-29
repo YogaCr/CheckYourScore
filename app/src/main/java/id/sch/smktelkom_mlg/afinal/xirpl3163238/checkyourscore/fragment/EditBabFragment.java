@@ -2,11 +2,15 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +27,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -41,6 +46,7 @@ public class EditBabFragment extends Fragment {
     Button btnSelesai;
     View itRemidi;
     EditText etLinkRemidi, etNamaBab, etPesanRemidi;
+    ProgressDialog progressDialog;
 
     public EditBabFragment() {
         // Required empty public constructor
@@ -53,6 +59,8 @@ public class EditBabFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_edit_bab, container, false);
         setHasOptionsMenu(true);
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Harap Tunggu");
         firestore = FirebaseFirestore.getInstance();
         etNamaBab = v.findViewById(R.id.etTambahNilaiNama);
         etPesanRemidi = v.findViewById(R.id.etTambahNilaiRemidi);
@@ -61,6 +69,30 @@ public class EditBabFragment extends Fragment {
         itRemidi = v.findViewById(R.id.tilRemidiLink);
         spnJenis = v.findViewById(R.id.spnTambahBabJenis);
         etLinkRemidi = v.findViewById(R.id.etTambahLinkRemidi);
+        etLinkRemidi.setText("http://");
+        Selection.setSelection(etLinkRemidi.getText(), etLinkRemidi.getText().length());
+        etLinkRemidi.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().startsWith("http://")) {
+                    etLinkRemidi.setText("http://");
+                    Selection.setSelection(etLinkRemidi.getText(), etLinkRemidi.getText().length());
+                }
+            }
+        });
+
         spnLinkRemidi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -94,9 +126,9 @@ public class EditBabFragment extends Fragment {
                 } else {
                     spnJenis.setSelection(1);
                 }
-                if (task.getResult().contains("LinkRemidi")) {
+                if (task.getResult().contains("URLRemidi")) {
                     spnLinkRemidi.setSelection(1);
-                    etLinkRemidi.setText(task.getResult().getString("LinkRemidi"));
+                    etLinkRemidi.setText(etLinkRemidi.getText().toString() + task.getResult().getString("URLRemidi").replace("http://", ""));
                 }
             }
         });
@@ -144,11 +176,13 @@ public class EditBabFragment extends Fragment {
     }
 
     public void saveData() {
+
         if (etNamaBab.getText().toString().isEmpty()) {
             etNamaBab.setError("Tolong masukkan nama materi");
         } else if ((spnLinkRemidi.getSelectedItemPosition() == 1 && etLinkRemidi.getText().toString().isEmpty()) || (spnLinkRemidi.getSelectedItemPosition() == 1 && !Patterns.WEB_URL.matcher(etLinkRemidi.getText().toString()).matches())) {
             etLinkRemidi.setError("Tolong masukkan link remidi dengan benar");
         } else {
+            progressDialog.show();
             Map<String, Object> data = new HashMap<>();
             data.put("Nama", etNamaBab.getText().toString());
             data.put("PesanRemidi", etPesanRemidi.getText().toString());
@@ -157,10 +191,10 @@ public class EditBabFragment extends Fragment {
             } else {
                 data.put("Tugas", false);
             }
-            if (spnLinkRemidi.getSelectedItemPosition() == 1 && !etLinkRemidi.getText().toString().isEmpty()) {
-                data.put("LinkRemidi", etLinkRemidi.getText().toString());
-            } else if (spnLinkRemidi.getSelectedItemPosition() == 0) {
-                data.remove("LinkRemidi");
+            if (spnLinkRemidi.getSelectedItemPosition() == 1) {
+                data.put("URLRemidi", etLinkRemidi.getText().toString());
+            } else {
+                data.put("URLRemidi", FieldValue.delete());
             }
             firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(idBab).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -171,6 +205,7 @@ public class EditBabFragment extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "Update Bab Gagal", Toast.LENGTH_SHORT).show();
                     }
+                    progressDialog.hide();
                 }
             });
         }

@@ -52,28 +52,35 @@ public class InputNilaiActivity extends AppCompatActivity {
         firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot ds : task.getResult()) {
-                        Map<String, Object> data = new HashMap<>();
-                        data.put("Nilai", 0);
-                        firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(ds.getString("UID")).set(data);
-                        firestore.collection("User").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    SiswaClass siswaClass = new SiswaClass();
-                                    siswaClass.setUID(task.getResult().getId());
-                                    siswaClass.setNama(task.getResult().getString("Nama"));
-                                    siswaClasses.add(siswaClass);
-                                    adapter.setSiswa(siswaClasses);
-                                    adapter.notifyDataSetChanged();
-                                    rvSiswa.setLayoutManager(new LinearLayoutManager(InputNilaiActivity.this));
-                                    rvSiswa.setAdapter(adapter);
+                if (task.getResult().size() == 0) {
+                    Intent in = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
+                    in.putExtra("UniqueCode", uniqueCode);
+                    startActivity(in);
+                    finish();
+                } else {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("Nilai", 0);
+                            firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(ds.getString("UID")).set(data);
+                            firestore.collection("User").document(ds.getString("UID")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        SiswaClass siswaClass = new SiswaClass();
+                                        siswaClass.setUID(task.getResult().getId());
+                                        siswaClass.setNama(task.getResult().getString("Nama"));
+                                        siswaClasses.add(siswaClass);
+                                        adapter.setSiswa(siswaClasses);
+                                        adapter.notifyDataSetChanged();
+                                        rvSiswa.setLayoutManager(new LinearLayoutManager(InputNilaiActivity.this));
+                                        rvSiswa.setAdapter(adapter);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                        progressDialog.hide();
                     }
-                    progressDialog.hide();
                 }
             }
         });

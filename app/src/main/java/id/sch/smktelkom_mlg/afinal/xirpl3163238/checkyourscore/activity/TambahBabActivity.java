@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
@@ -52,6 +55,31 @@ public class TambahBabActivity extends AppCompatActivity {
         itRemidi = findViewById(R.id.tilRemidiLink);
         spnJenis = findViewById(R.id.spnTambahBabJenis);
         etLinkRemidi = findViewById(R.id.etTambahLinkRemidi);
+        etLinkRemidi.setText("http://");
+        Selection.setSelection(etLinkRemidi.getText(), etLinkRemidi.getText().length());
+        etLinkRemidi.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().startsWith("http://")) {
+                    etLinkRemidi.setText("http://");
+                    Selection.setSelection(etLinkRemidi.getText(), etLinkRemidi.getText().length());
+                }
+            }
+        });
+
         spnLinkRemidi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

@@ -7,9 +7,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icon_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/icon_logo"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -23,17 +23,21 @@
         </activity>
         <activity
             android:name=".activity.MenuGuruActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/NoActionBar" />
         <activity android:name=".activity.BuatMapelActivity" />
         <activity
             android:name=".activity.MapelActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.MapelGuruActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.MenuSiswaActivity"
             android:label="Menu Siswa"
+            android:launchMode="singleInstance"
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.TambahBabActivity"
@@ -50,7 +54,10 @@
             android:name=".activity.IsiNilaiGuruActivity"
             android:theme="@style/NoActionBar" />
         <activity android:name=".activity.EditMapelActivity" />
-        <activity android:name=".activity.PesanRemidiActivity"></activity>
+        <activity
+            android:name=".activity.PesanRemidiActivity"
+            android:label="Pesan Remidi"
+            android:launchMode="singleInstance"></activity>
     </application>
 
 </manifest>

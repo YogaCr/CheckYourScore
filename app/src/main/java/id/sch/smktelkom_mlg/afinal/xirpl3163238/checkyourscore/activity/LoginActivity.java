@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.util.Patterns;
 import android.view.View;
 import android.view.animation.Animation;
@@ -122,22 +123,34 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
             }
         });
+        if (sharedPreferences.contains(pref_key)) {
+            guru = sharedPreferences.getBoolean(pref_key, true);
+        }
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (mAuth.getCurrentUser() != null) {
-                    if (mAuth.getCurrentUser().isEmailVerified()) {
-                        if (sharedPreferences.contains(pref_key)) {
-                            if (sharedPreferences.getBoolean(pref_key, true)) {
-                                afterLoginGuru();
+                    firestore.collection("User").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.getResult().exists()) {
+                                if (mAuth.getCurrentUser().isEmailVerified()) {
+                                    if (guru) {
+                                        afterLoginGuru();
+                                    } else {
+                                        afterLoginSiswa();
+                                    }
+                                } else {
+                                    layoutVerifikasi.startAnimation(animRightLeftEntrance);
+                                    layoutVerifikasi.setVisibility(View.VISIBLE);
+                                }
                             } else {
-                                afterLoginSiswa();
+                                layoutSetupPassword.startAnimation(animRightLeftEntrance);
+                                layoutSetupPassword.setVisibility(View.VISIBLE);
                             }
                         }
-                    } else {
-                        layoutVerifikasi.startAnimation(animRightLeftEntrance);
-                        layoutVerifikasi.setVisibility(View.VISIBLE);
-                    }
+                    });
+
                 } else {
                     layoutPilihLogin.startAnimation(animRightLeftEntrance);
                     layoutPilihLogin.setVisibility(View.VISIBLE);
@@ -215,6 +228,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                 firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                                                 afterLoginGuru();
                                             } else {
+                                                progressBarLogin.setVisibility(View.INVISIBLE);
                                                 layoutLogin.startAnimation(animRightLeftExit);
                                                 layoutSetupPassword.startAnimation(animRightLeftEntrance);
                                                 layoutLogin.setVisibility(View.INVISIBLE);
@@ -251,6 +265,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                 firestore.collection("User").document(mAuth.getCurrentUser().getUid()).set(data);
                                                 afterLoginSiswa();
                                             } else {
+                                                progressBarLogin.setVisibility(View.INVISIBLE);
                                                 layoutLogin.startAnimation(animRightLeftExit);
                                                 layoutSetupPassword.startAnimation(animRightLeftEntrance);
                                                 layoutLogin.setVisibility(View.INVISIBLE);
@@ -274,7 +289,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(R.id.loginView), e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.loginView), Html.fromHtml("<font color=\"#ffffff\"" + e.getMessage() + "</font>"), Snackbar.LENGTH_SHORT).show();
                         progressBarLogin.setVisibility(View.INVISIBLE);
                         layoutLogin.setVisibility(View.VISIBLE);
                         layoutLogin.startAnimation(animRightLeftEntrance);

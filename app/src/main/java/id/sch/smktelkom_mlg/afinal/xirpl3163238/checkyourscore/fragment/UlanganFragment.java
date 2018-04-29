@@ -1,9 +1,14 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +24,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -27,6 +34,7 @@ import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.NilaiClass;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.NilaiAdapter;
 
 
@@ -35,7 +43,7 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.NilaiAdap
  */
 public class UlanganFragment extends Fragment {
 
-
+    public static final int NOTIFICATION_ID = 10;
     FirebaseFirestore firestore;
     FirebaseAuth mAuth;
     RecyclerView rvNilaiUlangan;
@@ -73,13 +81,14 @@ public class UlanganFragment extends Fragment {
     }
 
     void getData() {
-        nilaiUlanganList.clear();
+
         progressBar.setVisibility(View.VISIBLE);
-        tvNone.setVisibility(View.INVISIBLE);
-        firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot ds : task.getResult()) {
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                nilaiUlanganList.clear();
+                for (DocumentSnapshot ds : documentSnapshots) {
                     final String nama = ds.getString("Nama");
                     final String id = ds.getId();
                     firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(ds.getId()).collection("Nilai").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -95,7 +104,16 @@ public class UlanganFragment extends Fragment {
                         }
 
                     });
+                    tvNone.setVisibility(View.INVISIBLE);
                 }
+                Intent in = new Intent(getContext(), MapelActivity.class);
+                in.putExtra("UniqueCode", uniqueCode);
+                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent intent = PendingIntent.getActivity(getContext(), 0, in, 0);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext()).setContentTitle("Nilai telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(NOTIFICATION_ID, builder.build());
+
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });

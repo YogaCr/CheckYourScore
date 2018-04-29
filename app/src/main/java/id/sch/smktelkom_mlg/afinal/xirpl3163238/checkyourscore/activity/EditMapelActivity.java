@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,10 +25,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
@@ -46,12 +47,16 @@ public class EditMapelActivity extends AppCompatActivity {
 
     int icons[] = {R.drawable.bahasa, R.drawable.biologi, R.drawable.kimia, R.drawable.mat, R.drawable.music, R.drawable.sejarah, R.drawable.seni, R.drawable.sosial, R.drawable.tik};
     Spinner spin;
+    List<String> nama = new ArrayList<>();
     private Uri filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_mapel);
+        for (int x = 0; x < icons.length; x++) {
+            nama.add(getResources().getResourceName(icons[x]));
+        }
         progressDialog = new ProgressDialog(EditMapelActivity.this);
         progressDialog.setMessage("Sedang Mengupload");
         uniqueCode = getIntent().getStringExtra("UniqueCode");
@@ -86,7 +91,6 @@ public class EditMapelActivity extends AppCompatActivity {
                 } else if (etKKM.getText().toString().isEmpty()) {
                     etKKM.setError("Tolong masukkan KKM");
                 } else {
-
                     progressDialog.show();
                     final Map<String, Object> data = new HashMap<>();
                     String icon = getResources().getResourceName(icons[spin.getSelectedItemPosition()]);
@@ -105,18 +109,12 @@ public class EditMapelActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                         data.put("Sampul", task.getResult().getDownloadUrl().toString());
-                                        Random r = new Random();
-                                        String abjad = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                                        String kode = "";
-                                        for (int x = 0; x < 6; x++) {
-                                            int y = r.nextInt(abjad.length());
-                                            kode += abjad.charAt(y);
-                                        }
-                                        firestore.collection("Mapel").document(kode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        firestore.collection("Mapel").document(uniqueCode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    Intent i = new Intent(EditMapelActivity.this, MenuGuruActivity.class);
+                                                    Intent i = new Intent(EditMapelActivity.this, MapelGuruActivity.class);
+                                                    i.putExtra("UniqueCode", uniqueCode);
                                                     startActivity(i);
                                                     finish();
                                                 }
@@ -125,18 +123,13 @@ public class EditMapelActivity extends AppCompatActivity {
                                     }
                                 });
                     } else {
-                        Random r = new Random();
-                        String abjad = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                        String kode = "";
-                        for (int x = 0; x < 6; x++) {
-                            int y = r.nextInt(abjad.length());
-                            kode += abjad.charAt(y);
-                        }
-                        firestore.collection("Mapel").document(kode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                        firestore.collection("Mapel").document(uniqueCode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Intent i = new Intent(EditMapelActivity.this, MenuGuruActivity.class);
+                                    Intent i = new Intent(EditMapelActivity.this, MapelGuruActivity.class);
+                                    i.putExtra("UniqueCode", uniqueCode);
                                     startActivity(i);
                                     finish();
                                 }
@@ -157,9 +150,11 @@ public class EditMapelActivity extends AppCompatActivity {
                 etNama.setText(task.getResult().getString("Nama"));
                 etKelas.setText(task.getResult().getString("Kelas"));
                 etKKM.setText(String.valueOf(task.getResult().getDouble("KKM")));
-                int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
-                int location = Arrays.asList(icons).indexOf(resDraw);
+                int location = nama.indexOf(task.getResult().getString("Icon"));
                 spin.setSelection(location);
+                if (task.getResult().contains("Sampul")) {
+                    Glide.with(EditMapelActivity.this).load(task.getResult().getString("Sampul")).into(ivSampul);
+                }
                 progressDialog.hide();
             }
         });

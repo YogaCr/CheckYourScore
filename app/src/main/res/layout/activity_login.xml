@@ -72,7 +72,8 @@
                         android:id="@+id/SignInAturPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Password Baru" />
+                        android:hint="Password Baru"
+                        android:inputType="textPassword" />
                 </android.support.design.widget.TextInputLayout>
 
                 <Button
@@ -506,8 +507,7 @@
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
-                    android:text="Email verifikasi telah kami kirim ke alamat email anda. Silahkan verifikasi alamat email anda terlebih dahulu untuk menggunakan aplikasi ini.
-                Jika anda tidak melakukan verifikasi lalu masuk menggunakan akun Google,maka semua data anda akan hilang."
+                    android:text="Email verifikasi telah kami kirim ke alamat email anda. Silahkan verifikasi alamat email anda terlebih dahulu untuk menggunakan aplikasi ini. Jika anda tidak melakukan verifikasi lalu masuk menggunakan akun Google,maka semua data anda akan hilang."
                     android:textAlignment="center"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
