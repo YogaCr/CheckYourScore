@@ -20,8 +20,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +55,7 @@ public class MenuSiswaActivity extends AppCompatActivity
     EditText etKodeMapel;
     AlertDialog.Builder builder;
     AlertDialog alertDialog;
+    ImageView ivProfil;
 
     @Override
     protected void onResume() {
@@ -76,6 +80,8 @@ public class MenuSiswaActivity extends AppCompatActivity
         tvEmailSiswa = headerview.findViewById(R.id.tvEmSiswa);
         tvNamaSiswa.setText(mAuth.getCurrentUser().getDisplayName());
         tvEmailSiswa.setText(mAuth.getCurrentUser().getEmail());
+        ivProfil = headerview.findViewById(R.id.ivProfilSiswa);
+        getGambar();
         rvMapelSiswa = findViewById(R.id.rvMapelSiswa);
         firestore = FirebaseFirestore.getInstance();
 
@@ -201,6 +207,14 @@ public class MenuSiswaActivity extends AppCompatActivity
         }
     }
 
+    void getGambar() {
+        if (mAuth.getCurrentUser().getPhotoUrl() == null) {
+            ivProfil.setImageResource(R.drawable.icon_profil);
+        } else {
+            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).apply(new RequestOptions().centerCrop()).into(ivProfil);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_refresh, menu);
@@ -245,4 +259,5 @@ public class MenuSiswaActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

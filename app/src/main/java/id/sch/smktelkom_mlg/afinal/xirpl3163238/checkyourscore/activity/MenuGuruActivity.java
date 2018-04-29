@@ -17,8 +17,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +47,7 @@ public class MenuGuruActivity extends AppCompatActivity
     MapelAdapter mapelAdapter;
     FirebaseFirestore firestore;
     ProgressDialog progressDialog;
+    ImageView ivProfil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +63,18 @@ public class MenuGuruActivity extends AppCompatActivity
         headerview = navigationView.getHeaderView(0);
         tvNamaGuru = headerview.findViewById(R.id.tvNamaGuru);
         tvEmailGuru = headerview.findViewById(R.id.tvEmailGuru);
+        ivProfil = headerview.findViewById(R.id.ivProfilGuru);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
-        getData();
+
 
         tvEmailGuru.setText(mAuth.getCurrentUser().getEmail());
+        getData();
+        getGambar();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +155,7 @@ public class MenuGuruActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
+        getGambar();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -173,5 +182,13 @@ public class MenuGuruActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    void getGambar() {
+        if (mAuth.getCurrentUser().getPhotoUrl() == null) {
+            ivProfil.setImageResource(R.drawable.icon_profil);
+        } else {
+            Glide.with(this).load(mAuth.getCurrentUser().getPhotoUrl()).apply(new RequestOptions().centerCrop()).into(ivProfil);
+        }
     }
 }

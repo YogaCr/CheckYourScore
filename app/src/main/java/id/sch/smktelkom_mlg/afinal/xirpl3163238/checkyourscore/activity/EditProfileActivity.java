@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,14 +59,19 @@ public class EditProfileActivity extends AppCompatActivity {
         GantiNamaPengguna = findViewById(R.id.GantiNamaPengguna);
         SelesaiNamaPengguna = findViewById(R.id.SelesaiNamaPengguna);
         EditNamaPengguna = findViewById(R.id.EditNamaPengguna);
-
+        EditNamaPengguna.setInputType(InputType.TYPE_NULL);
         gambarprofil = findViewById(R.id.GambarProfil);
+        if (auth.getCurrentUser().getPhotoUrl() == null) {
+            gambarprofil.setImageResource(R.drawable.icon_profil);
+        } else {
+            Glide.with(this).load(auth.getCurrentUser().getPhotoUrl()).apply(new RequestOptions().centerCrop()).into(gambarprofil);
+        }
         EditNamaPengguna.setText(auth.getCurrentUser().getDisplayName());
+
         GantiNamaPengguna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditNamaPengguna.setInputType(InputType.TYPE_CLASS_TEXT);
-
                 SelesaiNamaPengguna.setVisibility(View.VISIBLE);
                 GantiNamaPengguna.setVisibility(View.INVISIBLE);
             }
@@ -125,11 +132,12 @@ public class EditProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 progressDialog.dismiss();
-
                                 try {
                                     Bitmap bitmap;
                                     bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                                     gambarprofil.setImageBitmap(bitmap);
+                                    UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setPhotoUri(taskSnapshot.getDownloadUrl()).build();
+                                    auth.getCurrentUser().updateProfile(changeRequest);
                                     Toast.makeText(EditProfileActivity.this, "Berhasil mengubah gambar", Toast.LENGTH_SHORT).show();
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -143,14 +151,14 @@ public class EditProfileActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 progressDialog.dismiss();
-                                Toast.makeText(EditProfileActivity.this, "Gagal mengubah gambar" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditProfileActivity.this, "Gagal mengubah gambar", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                                progressDialog.setMessage("Uploaded" + (int) +progress + "%");
+                                progressDialog.setMessage("Sedang mengupload");
                             }
                         });
 
