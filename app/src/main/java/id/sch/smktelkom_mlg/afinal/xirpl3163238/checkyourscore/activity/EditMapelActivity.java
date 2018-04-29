@@ -42,6 +42,8 @@ public class EditMapelActivity extends AppCompatActivity {
     EditText etNama, etKelas, etKKM;
     StorageReference storageReference;
     ImageView ivSampul;
+    ProgressDialog progressDialog;
+
     int icons[] = {R.drawable.bahasa, R.drawable.biologi, R.drawable.kimia, R.drawable.mat, R.drawable.music, R.drawable.sejarah, R.drawable.seni, R.drawable.sosial, R.drawable.tik};
     Spinner spin;
     private Uri filePath;
@@ -50,6 +52,8 @@ public class EditMapelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_mapel);
+        progressDialog = new ProgressDialog(EditMapelActivity.this);
+        progressDialog.setMessage("Sedang Mengupload");
         uniqueCode = getIntent().getStringExtra("UniqueCode");
         layoutBuatMapel = findViewById(R.id.layoutBuatMapel);
         spin = findViewById(R.id.spinnerIcon);
@@ -82,8 +86,7 @@ public class EditMapelActivity extends AppCompatActivity {
                 } else if (etKKM.getText().toString().isEmpty()) {
                     etKKM.setError("Tolong masukkan KKM");
                 } else {
-                    final ProgressDialog progressDialog = new ProgressDialog(EditMapelActivity.this);
-                    progressDialog.setMessage("Sedang Mengupload");
+
                     progressDialog.show();
                     final Map<String, Object> data = new HashMap<>();
                     String icon = getResources().getResourceName(icons[spin.getSelectedItemPosition()]);
@@ -109,7 +112,7 @@ public class EditMapelActivity extends AppCompatActivity {
                                             int y = r.nextInt(abjad.length());
                                             kode += abjad.charAt(y);
                                         }
-                                        firestore.collection("Mapel").document(kode).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        firestore.collection("Mapel").document(kode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
@@ -129,7 +132,7 @@ public class EditMapelActivity extends AppCompatActivity {
                             int y = r.nextInt(abjad.length());
                             kode += abjad.charAt(y);
                         }
-                        firestore.collection("Mapel").document(kode).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        firestore.collection("Mapel").document(kode).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
@@ -147,6 +150,7 @@ public class EditMapelActivity extends AppCompatActivity {
     }
 
     void getData() {
+        progressDialog.show();
         firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -156,6 +160,7 @@ public class EditMapelActivity extends AppCompatActivity {
                 int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
                 int location = Arrays.asList(icons).indexOf(resDraw);
                 spin.setSelection(location);
+                progressDialog.hide();
             }
         });
     }

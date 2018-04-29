@@ -4,7 +4,19 @@
     android:layout_height="match_parent"
     tools:context="id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ProgressBar
+        android:id="@+id/pbFragUlanganSiswa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/tvUlanganSiswaNone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Tidak ada data"
+        android:visibility="invisible" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

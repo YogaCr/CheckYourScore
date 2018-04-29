@@ -17,6 +17,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,8 +30,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.Statistik;
@@ -51,6 +55,7 @@ public class MapelActivity extends AppCompatActivity {
     NestedScrollView nestedScrollView;
     ProgressDialog progressDialog;
     Double KKM;
+    FirebaseAuth mAuth;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -58,7 +63,7 @@ public class MapelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapel);
-
+        mAuth = FirebaseAuth.getInstance();
         tabLayout = findViewById(R.id.tabs);
         tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
@@ -144,6 +149,60 @@ public class MapelActivity extends AppCompatActivity {
                 progressDialog.hide();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_mapel_siswa, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.siswa_keluar:
+                keluar();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    void keluar() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Yakin mau keluar?");
+        builder.setPositiveButton("Iya", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            firestore.collection("JoinSiswa").document(ds.getId()).delete();
+                        }
+                    }
+                });
+                firestore.collection("Mapel").document(uniqueCode).collection("Bab").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            String id = ds.getId();
+                            firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(id).collection("Nilai").document(mAuth.getCurrentUser().getUid()).delete();
+                        }
+                        Intent i = new Intent(MapelActivity.this, MenuSiswaActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
+                        finish();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                builder.create().dismiss();
+            }
+        });
+        builder.create().show();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

@@ -7,8 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,6 +43,8 @@ public class UlanganFragment extends Fragment {
     List<NilaiClass> nilaiUlanganList = new ArrayList<>();
     String uniqueCode;
     Double KKM;
+    TextView tvNone;
+    ProgressBar progressBar;
 
     public UlanganFragment() {
         // Required empty public constructor
@@ -50,6 +57,8 @@ public class UlanganFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_ulangan, container, false);
         rvNilaiUlangan = v.findViewById(R.id.recyclerView);
+        tvNone = v.findViewById(R.id.tvUlanganSiswaNone);
+        progressBar = v.findViewById(R.id.pbFragUlanganSiswa);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -59,6 +68,14 @@ public class UlanganFragment extends Fragment {
                 KKM = task.getResult().getDouble("KKM");
             }
         });
+        getData();
+        return v;
+    }
+
+    void getData() {
+        nilaiUlanganList.clear();
+        progressBar.setVisibility(View.VISIBLE);
+        tvNone.setVisibility(View.INVISIBLE);
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -79,10 +96,26 @@ public class UlanganFragment extends Fragment {
 
                     });
                 }
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
-
-        return v;
+        if (nilaiUlanganList.size() == 0) {
+            tvNone.setVisibility(View.VISIBLE);
+        }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.siswa_refresh:
+                getData();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

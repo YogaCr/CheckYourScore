@@ -7,8 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -34,9 +39,11 @@ public class TugasFragment extends Fragment {
     FirebaseAuth mAuth;
     RecyclerView rvNilaiUlangan;
     NilaiAdapter nilaiAdapter;
-    List<NilaiClass> nilaiUlanganList = new ArrayList<>();
+    List<NilaiClass> nilaiTugasList = new ArrayList<>();
     String uniqueCode;
     Double KKM;
+    ProgressBar progressBar;
+    TextView tvNone;
 
     public TugasFragment() {
         // Required empty public constructor
@@ -48,6 +55,8 @@ public class TugasFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_ulangan, container, false);
         rvNilaiUlangan = v.findViewById(R.id.recyclerView);
+        progressBar = v.findViewById(R.id.pbFragTugasSiswa);
+        tvNone = v.findViewById(R.id.tvTugasSiswaNone);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
@@ -57,6 +66,14 @@ public class TugasFragment extends Fragment {
                 KKM = task.getResult().getDouble("KKM");
             }
         });
+        getData();
+        return v;
+    }
+
+    void getData() {
+        nilaiTugasList.clear();
+        progressBar.setVisibility(View.VISIBLE);
+        tvNone.setVisibility(View.INVISIBLE);
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -68,8 +85,8 @@ public class TugasFragment extends Fragment {
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             Boolean lulus;
                             lulus = task.getResult().getDouble("Nilai") >= KKM;
-                            nilaiUlanganList.add(new NilaiClass(nama, task.getResult().getDouble("Nilai"), lulus, id, uniqueCode));
-                            nilaiAdapter = new NilaiAdapter(nilaiUlanganList, getContext());
+                            nilaiTugasList.add(new NilaiClass(nama, task.getResult().getDouble("Nilai"), lulus, id, uniqueCode));
+                            nilaiAdapter = new NilaiAdapter(nilaiTugasList, getContext());
                             nilaiAdapter.notifyDataSetChanged();
                             rvNilaiUlangan.setLayoutManager(new LinearLayoutManager(getContext()));
                             rvNilaiUlangan.setAdapter(nilaiAdapter);
@@ -77,9 +94,26 @@ public class TugasFragment extends Fragment {
 
                     });
                 }
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
-        return v;
+        if (nilaiTugasList.size() == 0) {
+            tvNone.setVisibility(View.VISIBLE);
+        }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.siswa_refresh:
+                getData();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
