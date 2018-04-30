@@ -16,11 +16,6 @@ import android.widget.TextView;
 
 public class SliderAdapter extends PagerAdapter {
 
-    public int[] slideViewPagers = {
-            R.color.Slide1,
-            R.color.Slide2,
-            R.color.Slide3
-    };
     public int[] slide_images = {
             R.drawable.icon_logo,
             R.drawable.data,
@@ -28,13 +23,13 @@ public class SliderAdapter extends PagerAdapter {
     };
     public String[] slide_headings = {
             "SELAMAT DATANG",
-            "",
-            ""
+            "LIHAT NILAI ANDA",
+            "BAGAIMANA STATISTIK PERKEMBANGAN ANDA"
     };
     public String[] slide_descs = {
             "Check Your Score adalah aplikasi yang digunakan untuk memeriksa dan melihat perkembangan nilai di setiap mata pelajaran",
-            "Melihat nilai yang telah diupdate oleh guru anda",
-            "Dapat memantai perkembangan nilai melalui statistik"
+            "Melihat nilai dari guru lebih mudah tanpa harus bertanya-tanya terlebih dahulu",
+            "Naik atau malah turun? Pantau perkembangan nilai anda melalui statistik"
     };
     Context context;
     LayoutInflater layoutInflater;
@@ -65,6 +60,7 @@ public class SliderAdapter extends PagerAdapter {
 
 
 //        vpSlideViewPager.setAdapter(slideViewPagers[position]);
+
         slideImageView.setImageResource(slide_images[position]);
         slideHeading.setText(slide_headings[position]);
         slideDescription.setText(slide_descs[position]);

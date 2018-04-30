@@ -19,8 +19,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/slide_image"
         android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="18dp"
         android:layout_marginTop="18dp"
         android:text="SELAMAT DATANG"
+        android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold" />
 
@@ -34,5 +36,6 @@
         android:layout_marginTop="18dp"
         android:gravity="center_horizontal"
         android:text="Check Your Score adalah aplikasi yang digunakan untuk memeriksa dan melihat perkembangan nilai di setiap mata pelajaran"
-        android:textSize="18dp" />
+        android:textSize="18dp"
+        android:textStyle="bold" />
 </RelativeLayout>

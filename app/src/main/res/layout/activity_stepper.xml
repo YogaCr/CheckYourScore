@@ -15,35 +15,46 @@
     </android.support.v4.view.ViewPager>
 
     <LinearLayout
-        android:id="@+id/dotsLayout"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:foregroundGravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal" />
-
-    <Button
-        android:id="@+id/preview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:background="#00ffffff"
-        android:text="Preview"
-        android:textColor="@color/Putih"
-        android:visibility="invisible" />
+        android:background="#9c000000">
 
-    <Button
-        android:id="@+id/next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/preview"
-        android:layout_alignBottom="@+id/preview"
-        android:layout_alignParentEnd="true"
-        android:background="#00ffffff"
-        android:text="Next"
-        android:textColor="@color/Putih" />
+        <Button
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="16dp"
+            android:layout_weight="0.3"
+            android:background="#00ffffff"
+            android:gravity="start|center_vertical"
+            android:text="Preview"
+            android:textColor="@color/Putih"
+            android:visibility="invisible" />
 
+        <LinearLayout
+            android:id="@+id/dotsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="0.3"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal" />
+
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="0.3"
+            android:background="#00ffffff"
+            android:gravity="end|center_vertical"
+            android:text="Next"
+            android:textColor="@color/Putih" />
+    </LinearLayout>
 </RelativeLayout>
