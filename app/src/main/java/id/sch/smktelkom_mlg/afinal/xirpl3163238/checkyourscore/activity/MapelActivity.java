@@ -111,18 +111,20 @@ public class MapelActivity extends AppCompatActivity {
         i = getIntent();
         uniqueCode = i.getStringExtra("UniqueCode");
         if (i.hasExtra("FromNotif")) {
-            firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Notif", false);
-                            firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+            if (i.getBooleanExtra("FromNotif", true)) {
+                firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot ds : task.getResult()) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Notif", false);
+                                firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
         getData();
         getNotif();
