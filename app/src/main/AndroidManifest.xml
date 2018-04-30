@@ -9,6 +9,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:logo="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -38,7 +39,7 @@
         <activity
             android:name=".activity.MenuSiswaActivity"
             android:label="Menu Siswa"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.TambahBabActivity"
@@ -58,10 +59,8 @@
         <activity
             android:name=".activity.PesanRemidiActivity"
             android:label="Pesan Remidi"
-            android:launchMode="singleInstance"></activity>
-        <activity
-            android:name=".activity.AboutActivity"
-            android:label="Tentang"></activity>
+            android:launchMode="singleInstance" />
+        <activity android:name=".activity.AboutActivity"></activity>
     </application>
 
 </manifest>
