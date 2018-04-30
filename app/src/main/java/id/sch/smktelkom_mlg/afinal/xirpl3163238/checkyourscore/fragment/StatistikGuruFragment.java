@@ -18,9 +18,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.LabelFormatter;
-import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -135,18 +134,15 @@ public class StatistikGuruFragment extends Fragment {
                                                 label[i] = list.get(i).getNama();
                                             }
 
-                                            graphView.getGridLabelRenderer().setLabelFormatter(new LabelFormatter() {
+                                            graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
                                                 @Override
                                                 public String formatLabel(double value, boolean isValueX) {
+
                                                     if (isValueX) {
                                                         return label[((int) value) - 1];
                                                     }
-                                                    return null;
-                                                }
 
-                                                @Override
-                                                public void setViewport(Viewport viewport) {
-
+                                                    return super.formatLabel(value, isValueX);
                                                 }
                                             });
                                             graphView.getViewport().setMaxX(list.size());
