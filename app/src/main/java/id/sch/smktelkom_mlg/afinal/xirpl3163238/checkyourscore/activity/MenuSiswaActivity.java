@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -296,7 +297,12 @@ public class MenuSiswaActivity extends AppCompatActivity
                                 in.putExtra("FromNotif", true);
                                 in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 PendingIntent intent = PendingIntent.getActivity(MenuSiswaActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
-                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MenuSiswaActivity.this).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                NotificationCompat.Builder builder;
+                                if (Build.VERSION.SDK_INT == 25 || Build.VERSION.SDK_INT == 24) {
+                                    builder = new NotificationCompat.Builder(MenuSiswaActivity.this).addAction(R.mipmap.ic_launcher, "Mapel " + task.getResult().getString("Nama") + " telah diupdate", intent).setContentText("Silahkan dicek").setAutoCancel(true);
+                                } else {
+                                    builder = new NotificationCompat.Builder(MenuSiswaActivity.this).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                }
                                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 Notification notification = builder.build();
                                 notification.flags = Notification.FLAG_AUTO_CANCEL;
