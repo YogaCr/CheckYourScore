@@ -2,18 +2,19 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.text.Html;
 import android.util.Patterns;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -90,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         etPasswordSignUp = findViewById(R.id.signUpPassword);
         etSetupPassword = findViewById(R.id.SignInAturPassword);
 
+
         animRightLeftEntrance = AnimationUtils.loadAnimation(this, R.anim.righttoleftentrance);
         animRightLeftExit = AnimationUtils.loadAnimation(this, R.anim.righttoleftexit);
         connectingGoogleApiClient();
@@ -130,6 +132,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (mAuth.getCurrentUser() != null) {
+                    progressBarLogin.setVisibility(View.VISIBLE);
                     firestore.collection("User").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -141,10 +144,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         afterLoginSiswa();
                                     }
                                 } else {
+                                    progressBarLogin.setVisibility(View.INVISIBLE);
                                     layoutVerifikasi.startAnimation(animRightLeftEntrance);
                                     layoutVerifikasi.setVisibility(View.VISIBLE);
                                 }
                             } else {
+                                progressBarLogin.setVisibility(View.INVISIBLE);
                                 layoutSetupPassword.startAnimation(animRightLeftEntrance);
                                 layoutSetupPassword.setVisibility(View.VISIBLE);
                             }
@@ -152,6 +157,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     });
 
                 } else {
+
                     layoutPilihLogin.startAnimation(animRightLeftEntrance);
                     layoutPilihLogin.setVisibility(View.VISIBLE);
                 }
@@ -289,12 +295,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(R.id.loginView), Html.fromHtml("<font color=\"#ffffff\"" + e.getMessage() + "</font>"), Snackbar.LENGTH_SHORT).show();
+                        showSnackbar(e.getMessage());
                         progressBarLogin.setVisibility(View.INVISIBLE);
                         layoutLogin.setVisibility(View.VISIBLE);
                         layoutLogin.startAnimation(animRightLeftEntrance);
                     }
                 });
+            } else {
+                showSnackbar("Gagal login");
             }
         }
     }
@@ -374,7 +382,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             progressBarLogin.setVisibility(View.INVISIBLE);
                             layoutSignUp.setVisibility(View.VISIBLE);
                             layoutSignUp.startAnimation(animRightLeftEntrance);
-                            Snackbar.make(findViewById(R.id.loginView), e.getMessage().toString(), Snackbar.LENGTH_SHORT).show();
+                            showSnackbar(e.getMessage());
                         }
                     });
                 }
@@ -415,7 +423,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             progressBarLogin.setVisibility(View.INVISIBLE);
                             layoutLogin.setVisibility(View.VISIBLE);
                             layoutLogin.startAnimation(animRightLeftEntrance);
-                            Snackbar.make(findViewById(R.id.loginView), "Email atau password salah", Snackbar.LENGTH_SHORT).show();
+                            showSnackbar("Gagal login");
                         }
                     });
                 }
@@ -434,19 +442,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         afterLoginSiswa();
                     }
                 } else {
-                    Snackbar.make(findViewById(R.id.loginView), "Email anda belum diverifikasi", Snackbar.LENGTH_SHORT).show();
+                    showSnackbar("Email anda belum diverifikasi");
                 }
                 break;
             case R.id.btnResendVerification:
                 mAuth.getCurrentUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Snackbar.make(findViewById(R.id.loginView), "Email verifikasi sudah dikirim", Snackbar.LENGTH_SHORT).show();
+                        showSnackbar("Email verifikasi sudah dikirim");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(R.id.loginView), "Gagal mengirim email verifikasi", Snackbar.LENGTH_SHORT).show();
+                        showSnackbar("Gagal mengirim email verifikasi");
                     }
                 });
         }
@@ -454,6 +462,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Snackbar.make(findViewById(R.id.loginView), connectionResult.getErrorMessage(), Snackbar.LENGTH_SHORT).show();
+        showSnackbar(connectionResult.getErrorMessage());
+    }
+
+    void showSnackbar(String text) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.loginView), text, Snackbar.LENGTH_SHORT);
+        View snackbarview = snackbar.getView();
+        TextView tvSnackbar = snackbarview.findViewById(android.support.design.R.id.snackbar_text);
+        tvSnackbar.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 }
