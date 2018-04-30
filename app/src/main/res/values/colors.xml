@@ -8,4 +8,9 @@
     <color name="Hitam">#000000</color>
     <color name="pink">#f4dbdb</color>
     <color name="abuabu">#6e6d6d</color>
+
+
+    <color name="Slide1">#FFC107</color>
+    <color name="Slide2">#12decb</color>
+    <color name="Slide3">#cc92e9</color>
 </resources>
