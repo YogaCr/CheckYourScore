@@ -1,9 +1,6 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,7 +27,6 @@ import java.util.Map;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.SiswaClass;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelGuruActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.InputNilaiAdapter;
 
 
@@ -71,9 +67,7 @@ public class IsiNilaiGuruFragment extends Fragment {
             case R.id.inputnilaiSave:
                 saveData();
                 return true;
-            case R.id.inputnilaiDelete:
-                hapusBab();
-                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -83,27 +77,6 @@ public class IsiNilaiGuruFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    void hapusBab() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Yakin mau menghapus?");
-        builder.setPositiveButton("Iya", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(idBab).delete();
-                Intent i = new Intent(getContext(), MapelGuruActivity.class);
-                i.putExtra("UniqueCode", uniqueCode);
-                getActivity().startActivity(i);
-                getActivity().finish();
-            }
-        });
-        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                builder.create().dismiss();
-            }
-        });
-        builder.show();
-    }
 
     public void saveData() {
         int jumlah = recyclerView.getChildCount();
@@ -116,6 +89,17 @@ public class IsiNilaiGuruFragment extends Fragment {
                 } else {
                     data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
                 }
+
+                firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", classes.get(x)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            Map<String, Object> up = new HashMap<>();
+                            up.put("Notif", true);
+                            firestore.collection("JoinSiswa").document(ds.getId()).update(up);
+                        }
+                    }
+                });
                 firestore.collection("Mapel").document(getActivity().getIntent().getStringExtra("uniqueCode")).collection("Bab").document(getActivity().getIntent().getStringExtra("idBab")).collection("Nilai").document(classes.get(x).getUID()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

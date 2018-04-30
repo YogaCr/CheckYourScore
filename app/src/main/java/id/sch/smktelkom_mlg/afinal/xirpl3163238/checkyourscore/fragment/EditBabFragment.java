@@ -1,10 +1,7 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -34,7 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelGuruActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -141,34 +137,11 @@ public class EditBabFragment extends Fragment {
             case R.id.inputnilaiSave:
                 saveData();
                 return true;
-            case R.id.inputnilaiDelete:
-                hapusBab();
-                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
 
-    void hapusBab() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Yakin mau menghapus?");
-        builder.setPositiveButton("Iya", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(idBab).delete();
-                Intent i = new Intent(getContext(), MapelGuruActivity.class);
-                i.putExtra("UniqueCode", uniqueCode);
-                getActivity().startActivity(i);
-                getActivity().finish();
-            }
-        });
-        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                builder.create().dismiss();
-            }
-        });
-        builder.show();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

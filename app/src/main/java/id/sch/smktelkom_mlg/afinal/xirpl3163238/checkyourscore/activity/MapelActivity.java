@@ -1,7 +1,11 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -13,6 +17,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -32,8 +37,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.Statistik;
@@ -45,6 +55,7 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganF
  */
 
 public class MapelActivity extends AppCompatActivity {
+    public static final int NOTIFICATION_ID = 10;
     FirebaseFirestore firestore;
     String uniqueCode;
     Intent i;
@@ -87,7 +98,7 @@ public class MapelActivity extends AppCompatActivity {
                 return false;
             }
         });
-        TabLayout tabLayout = findViewById(R.id.tabs);
+        final TabLayout tabLayout = findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
@@ -98,8 +109,22 @@ public class MapelActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         i = getIntent();
         uniqueCode = i.getStringExtra("UniqueCode");
+        if (i.hasExtra("FromNotif")) {
+            firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("Notif", false);
+                            firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                        }
+                    }
+                }
+            });
+        }
         getData();
-
+        getNotif();
     }
 
     void getData() {
@@ -203,6 +228,35 @@ public class MapelActivity extends AppCompatActivity {
             }
         });
         builder.create().show();
+    }
+
+    void getNotif() {
+        firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                for (DocumentSnapshot ds : documentSnapshots) {
+                    String mapel = ds.getString("Mapel");
+                    firestore.collection("Mapel").document(mapel).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Intent in = new Intent(MapelActivity.this, MapelActivity.class);
+                                in.putExtra("UniqueCode", task.getResult().getId());
+                                in.putExtra("FromNotif", true);
+                                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                PendingIntent intent = PendingIntent.getActivity(MapelActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MapelActivity.this).setContentTitle("Nilai pada mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                Notification notification = builder.build();
+                                notification.flags = Notification.FLAG_AUTO_CANCEL;
+                                notificationManager.notify(NOTIFICATION_ID, builder.build());
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

@@ -52,6 +52,16 @@ public class InputNilaiActivity extends AppCompatActivity {
         firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for (DocumentSnapshot ds : task.getResult()) {
+                    Map<String, Object> up = new HashMap<>();
+                    up.put("Notif", true);
+                    firestore.collection("JoinSiswa").document(ds.getId()).update(up);
+                }
+            }
+        });
+        firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.getResult().size() == 0) {
                     Intent in = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
                     in.putExtra("UniqueCode", uniqueCode);
@@ -142,13 +152,17 @@ public class InputNilaiActivity extends AppCompatActivity {
                 } else {
                     data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
                 }
+
                 firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).collection("Nilai").document(siswaClasses.get(x).getUID()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
-                        i.putExtra("UniqueCode", uniqueCode);
-                        startActivity(i);
-                        finish();
+                        if (task.isSuccessful()) {
+
+                            Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
+                            i.putExtra("UniqueCode", uniqueCode);
+                            startActivity(i);
+                            finish();
+                        }
                     }
                 });
             }

@@ -1,13 +1,18 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +27,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,7 +35,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -43,6 +51,7 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.MapelAdap
 
 public class MenuSiswaActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int NOTIFICATION_ID = 10;
     FirebaseAuth mAuth;
     TextView tvNamaSiswa, tvEmailSiswa;
     RecyclerView rvMapelSiswa;
@@ -57,10 +66,12 @@ public class MenuSiswaActivity extends AppCompatActivity
     AlertDialog alertDialog;
     ImageView ivProfil;
 
+
     @Override
     protected void onResume() {
         super.onResume();
         tvNamaSiswa.setText(mAuth.getCurrentUser().getDisplayName());
+        getGambar();
     }
 
     @Override
@@ -82,6 +93,7 @@ public class MenuSiswaActivity extends AppCompatActivity
         tvEmailSiswa.setText(mAuth.getCurrentUser().getEmail());
         ivProfil = headerview.findViewById(R.id.ivProfilSiswa);
         getGambar();
+
         rvMapelSiswa = findViewById(R.id.rvMapelSiswa);
         firestore = FirebaseFirestore.getInstance();
 
@@ -152,6 +164,8 @@ public class MenuSiswaActivity extends AppCompatActivity
             }
         });
         getData();
+        getNotif();
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -190,8 +204,11 @@ public class MenuSiswaActivity extends AppCompatActivity
                                                            }
                                                        });
                                                    }
-                                                   progressDialog.hide();
+
+                                               } else {
+                                                   Toast.makeText(MenuSiswaActivity.this, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show();
                                                }
+                                               progressDialog.hide();
                                            }
                                        }
                 );
@@ -254,10 +271,42 @@ public class MenuSiswaActivity extends AppCompatActivity
                 Intent x = new Intent(MenuSiswaActivity.this, EditProfileActivity.class);
                 startActivity(x);
                 return true;
+            case R.id.nav_tentang:
+                Intent in = new Intent(MenuSiswaActivity.this, AboutActivity.class);
+                startActivity(in);
+                return true;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    void getNotif() {
+        firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                for (DocumentSnapshot ds : documentSnapshots) {
+                    String mapel = ds.getString("Mapel");
+                    firestore.collection("Mapel").document(mapel).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Intent in = new Intent(MenuSiswaActivity.this, MapelActivity.class);
+                                in.putExtra("UniqueCode", task.getResult().getId());
+                                in.putExtra("FromNotif", true);
+                                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                PendingIntent intent = PendingIntent.getActivity(MenuSiswaActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MenuSiswaActivity.this).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                Notification notification = builder.build();
+                                notification.flags = Notification.FLAG_AUTO_CANCEL;
+                                notificationManager.notify(NOTIFICATION_ID, builder.build());
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+    }
 }
