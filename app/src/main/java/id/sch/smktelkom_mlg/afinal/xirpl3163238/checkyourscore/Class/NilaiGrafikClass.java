@@ -5,8 +5,17 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class;
  */
 
 public class NilaiGrafikClass {
+    Boolean tugas;
     private String Nama;
     private Double Nilai;
+
+    public Boolean getTugas() {
+        return tugas;
+    }
+
+    public void setTugas(Boolean tugas) {
+        this.tugas = tugas;
+    }
 
     public String getNama() {
         return Nama;

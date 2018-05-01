@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,11 @@ public class UlanganGuruFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getData();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,27 +70,25 @@ public class UlanganGuruFragment extends Fragment {
     void getData() {
         tvNone.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
-        list.clear();
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (task.getResult().size() > 0) {
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            TugasGuruClass guruClass = new TugasGuruClass();
-                            guruClass.setNama(ds.getString("Nama"));
-                            guruClass.setID(ds.getId());
-                            list.add(guruClass);
-                        }
-                        adapter = new TugasGuruAdapter(list, getContext());
-                        adapter.notifyDataSetChanged();
-                        rvUlangan.setLayoutManager(new LinearLayoutManager(getContext()));
-                        rvUlangan.setAdapter(adapter);
-                    } else {
-                        tvNone.setVisibility(View.VISIBLE);
+                list.clear();
+                if (task.getResult().size() > 0) {
+                    for (DocumentSnapshot ds : task.getResult()) {
+                        TugasGuruClass guruClass = new TugasGuruClass();
+                        guruClass.setNama(ds.getString("Nama"));
+                        guruClass.setID(ds.getId());
+                        list.add(guruClass);
                     }
-                    progressBar.setVisibility(View.INVISIBLE);
+                    adapter = new TugasGuruAdapter(list, getContext());
+                    adapter.notifyDataSetChanged();
+                    rvUlangan.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvUlangan.setAdapter(adapter);
+                } else {
+                    tvNone.setVisibility(View.VISIBLE);
                 }
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -97,5 +102,10 @@ public class UlanganGuruFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

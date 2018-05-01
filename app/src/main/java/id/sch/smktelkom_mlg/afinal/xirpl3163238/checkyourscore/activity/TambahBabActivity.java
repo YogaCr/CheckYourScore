@@ -104,7 +104,7 @@ public class TambahBabActivity extends AppCompatActivity {
                 if (etNamaBab.getText().toString().isEmpty()) {
                     etNamaBab.setError("Tolong masukkan nama materi");
                 } else if ((spnLinkRemidi.getSelectedItemPosition() == 1 && etLinkRemidi.getText().toString().isEmpty()) || (spnLinkRemidi.getSelectedItemPosition() == 1 && !Patterns.WEB_URL.matcher(etLinkRemidi.getText().toString()).matches())) {
-                    etPesanRemidi.setError("Tolong masukkan link remidi dengan benar");
+                    etLinkRemidi.setError("Tolong masukkan link remidi dengan benar");
                 } else {
                     progressDialog.show();
                     Map<String, Object> data = new HashMap<>();

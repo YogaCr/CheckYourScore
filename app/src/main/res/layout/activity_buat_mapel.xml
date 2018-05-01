@@ -89,6 +89,6 @@
             android:id="@+id/btnBuatMapel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload" />
+            android:text="Simpan" />
     </LinearLayout>
 </ScrollView>

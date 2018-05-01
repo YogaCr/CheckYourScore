@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -39,6 +38,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -61,30 +61,31 @@ public class MenuSiswaActivity extends AppCompatActivity
     List<MapelClass> mapelList = new ArrayList<>();
     MapelAdapter mapelAdapter;
     FirebaseFirestore firestore;
-    ProgressDialog progressDialog;
     EditText etKodeMapel;
+    ProgressDialog progressDialog;
     AlertDialog.Builder builder;
     AlertDialog alertDialog;
     ImageView ivProfil;
-
+    ListenerRegistration listenerRegistration;
 
     @Override
     protected void onResume() {
         super.onResume();
         tvNamaSiswa.setText(mAuth.getCurrentUser().getDisplayName());
         getGambar();
+        getData();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_siswa);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Harap Tunggu");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         navigationView = findViewById(R.id.nav_view_siswa);
         headerview = navigationView.getHeaderView(0);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Mohon Tunggu");
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
         mAuth = FirebaseAuth.getInstance();
         Toolbar toolbar = findViewById(R.id.toolbarsiswa);
         setSupportActionBar(toolbar);
@@ -97,7 +98,7 @@ public class MenuSiswaActivity extends AppCompatActivity
 
         rvMapelSiswa = findViewById(R.id.rvMapelSiswa);
         firestore = FirebaseFirestore.getInstance();
-
+        findViewById(R.id.tvMenuSiswaNone).setVisibility(View.VISIBLE);
         builder = new AlertDialog.Builder(MenuSiswaActivity.this);
         builder.setCancelable(true);
         View v = LayoutInflater.from(MenuSiswaActivity.this).inflate(R.layout.layout_tambah_mapel_siswa, null);
@@ -111,13 +112,12 @@ public class MenuSiswaActivity extends AppCompatActivity
                 if (etKodeMapel.getText().toString().isEmpty()) {
                     etKodeMapel.setError("Tolong isi kode mapel");
                 } else {
-                    progressDialog.show();
                     final String kode = etKodeMapel.getText().toString();
                     firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Mapel", kode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.getResult().size() > 0) {
-                                etKodeMapel.setError("Anda sudah bergabung");
+                                Toast.makeText(MenuSiswaActivity.this, "Anda sudah bergabung", Toast.LENGTH_SHORT).show();
                             } else {
                                 firestore.collection("Mapel").document(kode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
@@ -137,7 +137,10 @@ public class MenuSiswaActivity extends AppCompatActivity
                                                     }
                                                 }
                                             });
-                                            getData();
+                                            Intent intent = new Intent(MenuSiswaActivity.this, MapelActivity.class);
+                                            intent.putExtra("UniqueCode", kode);
+                                            startActivity(intent);
+                                            alertDialog.dismiss();
 
                                         } else {
                                             etKodeMapel.setError("Kode salah");
@@ -146,12 +149,9 @@ public class MenuSiswaActivity extends AppCompatActivity
                                     }
                                 });
                             }
-                            progressDialog.hide();
-                            alertDialog.dismiss();
+
                         }
                     });
-
-
                 }
             }
         });
@@ -164,7 +164,7 @@ public class MenuSiswaActivity extends AppCompatActivity
                 alertDialog.show();
             }
         });
-        getData();
+
         getNotif();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -176,43 +176,43 @@ public class MenuSiswaActivity extends AppCompatActivity
     }
 
     void getData() {
-        mapelList.clear();
+        findViewById(R.id.tvMenuSiswaNone).setVisibility(View.VISIBLE);
         progressDialog.show();
+
         firestore.collection("JoinSiswa")
                 .whereEqualTo("UID", mAuth.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                           @Override
-                                           public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                               if (task.isSuccessful()) {
-                                                   for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                                                       firestore.collection("Mapel").document(documentSnapshot.getString("Mapel")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                           @Override
-                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                               MapelClass m = new MapelClass();
-                                                               m.setNama(task.getResult().getString("Nama"));
-                                                               m.setKelas(task.getResult().getString("Kelas"));
-                                                               if (task.getResult().contains("Sampul")) {
-                                                                   m.setUrlSampul(task.getResult().getString("Sampul"));
-                                                               }
-                                                               m.setIconResource(getResources().getIdentifier(task.getResult().getString("Icon"), "drawable", getPackageName()));
-                                                               m.setUniqueCode(task.getResult().getId());
-                                                               mapelList.add(m);
-                                                               mapelAdapter = new MapelAdapter(MenuSiswaActivity.this, mapelList, false);
-                                                               mapelAdapter.notifyDataSetChanged();
-                                                               rvMapelSiswa.setLayoutManager(new LinearLayoutManager(MenuSiswaActivity.this));
-                                                               rvMapelSiswa.setAdapter(mapelAdapter);
-                                                           }
-                                                       });
-                                                   }
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                mapelList.clear();
+                for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                    firestore.collection("Mapel").document(documentSnapshot.getString("Mapel")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                                               } else {
-                                                   Toast.makeText(MenuSiswaActivity.this, "Gagal mendapatkan data", Toast.LENGTH_SHORT).show();
-                                               }
-                                               progressDialog.hide();
-                                           }
-                                       }
-                );
+                            if (task.getResult().exists()) {
+                                MapelClass m = new MapelClass();
+                                m.setNama(task.getResult().getString("Nama"));
+                                m.setKelas(task.getResult().getString("Kelas"));
+                                if (task.getResult().contains("Sampul")) {
+                                    m.setUrlSampul(task.getResult().getString("Sampul"));
+                                }
+                                m.setIconResource(getResources().getIdentifier(task.getResult().getString("Icon"), "drawable", getPackageName()));
+                                m.setUniqueCode(task.getResult().getId());
+                                mapelList.add(m);
+                                mapelAdapter = new MapelAdapter(MenuSiswaActivity.this, mapelList, false);
+                                mapelAdapter.notifyDataSetChanged();
+                                rvMapelSiswa.setLayoutManager(new LinearLayoutManager(MenuSiswaActivity.this));
+                                rvMapelSiswa.setAdapter(mapelAdapter);
+                                findViewById(R.id.tvMenuSiswaNone).setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+                }
+                progressDialog.hide();
+
+            }
+        });
     }
 
     @Override
@@ -233,28 +233,10 @@ public class MenuSiswaActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_refresh, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.menuRefresh:
-                getData();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_logOut:
@@ -263,6 +245,7 @@ public class MenuSiswaActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("IS_GURU");
                 editor.apply();
+                listenerRegistration.remove();
                 Intent i = new Intent(MenuSiswaActivity.this, LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -283,30 +266,44 @@ public class MenuSiswaActivity extends AppCompatActivity
     }
 
     void getNotif() {
-        firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        listenerRegistration = firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 for (DocumentSnapshot ds : documentSnapshots) {
-                    String mapel = ds.getString("Mapel");
+                    final String mapel = ds.getString("Mapel");
                     firestore.collection("Mapel").document(mapel).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
-                                Intent in = new Intent(MenuSiswaActivity.this, MapelActivity.class);
-                                in.putExtra("UniqueCode", task.getResult().getId());
-                                in.putExtra("FromNotif", true);
-                                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                PendingIntent intent = PendingIntent.getActivity(MenuSiswaActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
-                                NotificationCompat.Builder builder;
-                                if (Build.VERSION.SDK_INT == 25 || Build.VERSION.SDK_INT == 24) {
-                                    builder = new NotificationCompat.Builder(MenuSiswaActivity.this).addAction(R.mipmap.ic_launcher, "Mapel " + task.getResult().getString("Nama") + " telah diupdate", intent).setContentText("Silahkan dicek").setAutoCancel(true);
-                                } else {
+                                if (task.getResult().exists()) {
+                                    NotificationCompat.Builder builder;
+                                    Intent in = new Intent(MenuSiswaActivity.this, MapelActivity.class);
+                                    in.putExtra("UniqueCode", task.getResult().getId());
+                                    in.putExtra("FromNotif", true);
+                                    in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    PendingIntent intent = PendingIntent.getActivity(MenuSiswaActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
+
                                     builder = new NotificationCompat.Builder(MenuSiswaActivity.this).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    Notification notification = builder.build();
+                                    notification.flags = Notification.FLAG_AUTO_CANCEL;
+                                    notificationManager.notify(NOTIFICATION_ID, builder.build());
+                                    firestore.collection("JoinSiswa").whereEqualTo("Mapel", mapel).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult().size() > 0) {
+                                                    for (DocumentSnapshot ds : task.getResult()) {
+                                                        Map<String, Object> map = new HashMap<>();
+                                                        map.put("Notif", false);
+                                                        firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
                                 }
-                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                Notification notification = builder.build();
-                                notification.flags = Notification.FLAG_AUTO_CANCEL;
-                                notificationManager.notify(NOTIFICATION_ID, builder.build());
                             }
                         }
                     });
@@ -314,5 +311,19 @@ public class MenuSiswaActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_refresh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menuRefresh) {
+            getData();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

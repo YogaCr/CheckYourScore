@@ -71,11 +71,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TabItem
-                android:id="@+id/tabItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_text_1" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem2"
@@ -114,4 +109,12 @@
         android:background="#000000"
         android:src="@drawable/icon_add" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_graph_guru"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="#000000"
+        android:src="@drawable/icon_graph" />
 </android.support.design.widget.CoordinatorLayout>

@@ -127,6 +127,7 @@ public class InputNilaiActivity extends AppCompatActivity {
                 firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(materi).delete();
                 Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
                 i.putExtra("UniqueCode", uniqueCode);
+                i.putExtra("Update", true);
                 startActivity(i);
                 finish();
             }
@@ -157,9 +158,9 @@ public class InputNilaiActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-
                             Intent i = new Intent(InputNilaiActivity.this, MapelGuruActivity.class);
                             i.putExtra("UniqueCode", uniqueCode);
+                            i.putExtra("Update", true);
                             startActivity(i);
                             finish();
                         }

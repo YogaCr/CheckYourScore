@@ -80,6 +80,7 @@ public class IsiNilaiGuruActivity extends AppCompatActivity {
                 });
                 Intent i = new Intent(IsiNilaiGuruActivity.this, MapelGuruActivity.class);
                 i.putExtra("UniqueCode", uniqueCode);
+                i.putExtra("Update", true);
                 startActivity(i);
                 finish();
             }
@@ -107,7 +108,6 @@ public class IsiNilaiGuruActivity extends AppCompatActivity {
                 return false;
             case R.id.inputnilaiDelete:
                 hapusBab();
-                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

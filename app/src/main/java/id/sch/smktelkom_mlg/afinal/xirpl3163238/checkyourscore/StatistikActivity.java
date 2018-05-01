@@ -1,15 +1,9 @@
-package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
-
+package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,13 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.NilaiGrafikClass;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class Statistik extends Fragment {
+public class StatistikActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     TextView tvError;
     BarGraphSeries<DataPoint> data;
@@ -48,24 +37,18 @@ public class Statistik extends Fragment {
     FirebaseFirestore firestore;
     String uniqueCode;
 
-
-    public Statistik() {
-        // Required empty public constructor
-    }
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.fragment_statistik, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_statistik);
         mAuth = FirebaseAuth.getInstance();
-        graphView = v.findViewById(R.id.graphSiswa);
-        graphView.getViewport().setScalable(true);
-        tvError = v.findViewById(R.id.tvErrorStatistikSiswa);
-        spnJenis = v.findViewById(R.id.spnStatSiswaJenis);
+        graphView = findViewById(R.id.graphSiswa);
+
+        graphView.getViewport().setScrollable(true);
+        tvError = findViewById(R.id.tvErrorStatistikSiswa);
+        spnJenis = findViewById(R.id.spnStatSiswaJenis);
         firestore = FirebaseFirestore.getInstance();
-        uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
+        uniqueCode = getIntent().getStringExtra("UniqueCode");
         spnJenis.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -81,7 +64,6 @@ public class Statistik extends Fragment {
 
             }
         });
-        return v;
     }
 
     void getData(final boolean tugas) {
@@ -93,7 +75,7 @@ public class Statistik extends Fragment {
                 if (task.isSuccessful()) {
                     getTugas(tugas);
                 } else {
-                    Toast.makeText(getContext(), "Gagal", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StatistikActivity.this, "Gagal", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -133,26 +115,23 @@ public class Statistik extends Fragment {
                                             }
                                             final String[] label = new String[list.size()];
                                             for (int i = 0; i < label.length; i++) {
-                                                label[i] = list.get(i).getNama();
+                                                label[i] = list.get(i).getNama().substring(0, 4);
                                             }
                                             String[] labelY = {"0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
                                             StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(graphView, label, labelY);
                                             graphView.getGridLabelRenderer().setLabelFormatter(labelsFormatter);
                                             graphView.getGridLabelRenderer().setNumHorizontalLabels(label.length);
-
-                                            graphView.getViewport().setMaxX(0);
-                                            graphView.getViewport().setMaxX(label.length - 1);
                                             graphView.getViewport().setMinY(0);
                                             graphView.getViewport().setMaxY(100);
                                             graphView.getViewport().setYAxisBoundsManual(true);
                                             data = new BarGraphSeries<>(values);
-                                            data.setSpacing(10);
+                                            data.setSpacing(50);
                                             graphView.addSeries(data);
 
                                         }
                                     }
                                 } else {
-                                    Toast.makeText(getContext(), "Gagal", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(StatistikActivity.this, "Gagal", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -169,23 +148,5 @@ public class Statistik extends Fragment {
             tvError.setText("Tidak ada data");
             tvError.setVisibility(View.VISIBLE);
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.siswa_refresh) {
-            if (spnJenis.getSelectedItemPosition() == 0) {
-                getData(true);
-            } else {
-                getData(false);
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

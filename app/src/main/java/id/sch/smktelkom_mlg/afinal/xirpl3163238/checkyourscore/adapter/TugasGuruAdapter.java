@@ -42,6 +42,7 @@ public class TugasGuruAdapter extends RecyclerView.Adapter<TugasGuruAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Intent x = ((Activity) context).getIntent();
         final String uniqueCode = x.getStringExtra("UniqueCode");
+
         holder.tvNama.setText(guruClassList.get(position).getNama());
         holder.cvTugas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +67,7 @@ public class TugasGuruAdapter extends RecyclerView.Adapter<TugasGuruAdapter.View
         public ViewHolder(View itemView) {
             super(itemView);
             tvNama = itemView.findViewById(R.id.tvnama_tugas);
+
             cvTugas = itemView.findViewById(R.id.cvTugasGuru);
         }
     }

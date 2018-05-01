@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -16,9 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter.NilaiAdap
  * A simple {@link Fragment} subclass.
  */
 public class TugasFragment extends Fragment {
-    public static final int NOTIFICATION_ID = 10;
     FirebaseFirestore firestore;
     FirebaseAuth mAuth;
     RecyclerView rvNilaiUlangan;
@@ -65,6 +65,7 @@ public class TugasFragment extends Fragment {
                 KKM = task.getResult().getDouble("KKM");
             }
         });
+        nilaiAdapter = new NilaiAdapter(nilaiTugasList, getContext());
         getData();
         return v;
     }
@@ -73,30 +74,29 @@ public class TugasFragment extends Fragment {
 
         progressBar.setVisibility(View.VISIBLE);
         tvNone.setVisibility(View.INVISIBLE);
-        firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 nilaiTugasList.clear();
-                for (DocumentSnapshot ds : documentSnapshots) {
+                for (DocumentSnapshot ds : task.getResult()) {
                     final String nama = ds.getString("Nama");
                     final String id = ds.getId();
                     firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(ds.getId()).collection("Nilai").document(mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            Boolean lulus;
-                            lulus = task.getResult().getDouble("Nilai") >= KKM;
-                            nilaiTugasList.add(new NilaiClass(nama, task.getResult().getDouble("Nilai"), lulus, id, uniqueCode));
-                            nilaiAdapter = new NilaiAdapter(nilaiTugasList, getContext());
-                            nilaiAdapter.notifyDataSetChanged();
-                            rvNilaiUlangan.setLayoutManager(new LinearLayoutManager(getContext()));
-                            rvNilaiUlangan.setAdapter(nilaiAdapter);
-                            tvNone.setVisibility(View.INVISIBLE);
+                            if (task.getResult().exists()) {
+                                Boolean lulus;
+                                lulus = task.getResult().getDouble("Nilai") >= KKM;
+                                nilaiTugasList.add(new NilaiClass(nama, task.getResult().getDouble("Nilai"), lulus, id, uniqueCode));
+                                nilaiAdapter = new NilaiAdapter(nilaiTugasList, getContext());
+                                nilaiAdapter.notifyDataSetChanged();
+                                rvNilaiUlangan.setLayoutManager(new LinearLayoutManager(getContext()));
+                                rvNilaiUlangan.setAdapter(nilaiAdapter);
+                                tvNone.setVisibility(View.INVISIBLE);
+                            }
                         }
-
                     });
-
                 }
-
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
@@ -105,4 +105,17 @@ public class TugasFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.siswa_refresh) {
+            getData();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

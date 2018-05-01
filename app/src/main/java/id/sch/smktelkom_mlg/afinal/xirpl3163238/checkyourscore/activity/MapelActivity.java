@@ -1,15 +1,10 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity;
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +13,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -38,16 +32,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.Statistik;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.StatistikActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.TugasFragment;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganFragment;
 
@@ -60,6 +52,7 @@ public class MapelActivity extends AppCompatActivity {
     FirebaseFirestore firestore;
     String uniqueCode;
     Intent i;
+
     ImageView ivIcon, ivSampul;
     Toolbar toolbar;
     TabLayout tabLayout;
@@ -77,9 +70,9 @@ public class MapelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mapel);
         mAuth = FirebaseAuth.getInstance();
         tabLayout = findViewById(R.id.tabs);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
-        tabLayout.getTabAt(2).setIcon(R.drawable.icon_nilaiulangan);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.icon_nilai);
+        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilaiulangan);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         ivIcon = findViewById(R.id.gambarmapelsiswa);
@@ -116,26 +109,57 @@ public class MapelActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (DocumentSnapshot ds : task.getResult()) {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put("Notif", false);
-                                firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                            if (task.getResult().size() > 0) {
+                                for (DocumentSnapshot ds : task.getResult()) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("Notif", false);
+                                    firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                                }
                             }
                         }
                     }
                 });
             }
         }
+        findViewById(R.id.fab_graph_siswa).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent in = new Intent(MapelActivity.this, StatistikActivity.class);
+                in.putExtra("UniqueCode", uniqueCode);
+                startActivity(in);
+            }
+        });
+        firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (task.getResult().size() > 0) {
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MapelActivity.this);
+                        builder.setMessage("Anda tidak mengikuti mapel ini");
+                        builder.setPositiveButton("Kembali", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent i = new Intent(MapelActivity.this, MenuSiswaActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                                finish();
+                            }
+                        });
+                        builder.create().show();
+                    }
+                }
+            }
+        });
         getData();
-        getNotif();
+
     }
 
     void getData() {
-        progressDialog.show();
         firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() && task.getResult().exists()) {
                     ctl.setTitle(task.getResult().getString("Nama"));
                     KKM = task.getResult().getDouble("KKM");
                     int resDraw = getResources().getIdentifier(task.getResult().getString("Icon"), "Drawable", getPackageName());
@@ -188,6 +212,9 @@ public class MapelActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.siswa_refresh:
+                getData();
+                return false;
             case R.id.siswa_keluar:
                 keluar();
                 return true;
@@ -233,39 +260,6 @@ public class MapelActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    void getNotif() {
-        firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                for (DocumentSnapshot ds : documentSnapshots) {
-                    String mapel = ds.getString("Mapel");
-                    firestore.collection("Mapel").document(mapel).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                Intent in = new Intent(MapelActivity.this, MapelActivity.class);
-                                in.putExtra("UniqueCode", task.getResult().getId());
-                                in.putExtra("FromNotif", true);
-                                in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                PendingIntent intent = PendingIntent.getActivity(MapelActivity.this, 0, in, PendingIntent.FLAG_ONE_SHOT);
-                                NotificationCompat.Builder builder;
-                                if (Build.VERSION.SDK_INT == 25 || Build.VERSION.SDK_INT == 24) {
-                                    builder = new NotificationCompat.Builder(MapelActivity.this).addAction(R.mipmap.ic_launcher, "Mapel " + task.getResult().getString("Nama") + " telah diupdate", intent).setContentText("Silahkan dicek").setAutoCancel(true);
-                                } else {
-                                    builder = new NotificationCompat.Builder(MapelActivity.this).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
-                                }
-                                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                Notification notification = builder.build();
-                                notification.flags = Notification.FLAG_AUTO_CANCEL;
-                                notificationManager.notify(NOTIFICATION_ID, builder.build());
-                            }
-                        }
-                    });
-
-                }
-            }
-        });
-    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -276,20 +270,19 @@ public class MapelActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
+
                 case 0:
-                    return new Statistik();
-                case 1:
                     return new TugasFragment();
-                case 2:
+                case 1:
                     return new UlanganFragment();
                 default:
-                    return new Statistik();
+                    return new TugasFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
     }
 }

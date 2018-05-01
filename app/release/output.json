@@ -1,0 +1,18 @@
+[
+  {
+    "outputType": {
+      "type": "APK"
+    },
+    "apkInfo": {
+      "type": "MAIN",
+      "splits": [],
+      "versionCode": 1
+    },
+    "path": "app-release.apk",
+    "properties": {
+      "packageId": "id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore",
+      "split": "",
+      "minSdkVersion": "18"
+    }
+  }
+]

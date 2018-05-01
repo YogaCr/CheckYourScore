@@ -89,17 +89,6 @@ public class IsiNilaiGuruFragment extends Fragment {
                 } else {
                     data.put("Nilai", Double.parseDouble(viewHolder.etNilai.getText().toString()));
                 }
-
-                firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", classes.get(x)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            Map<String, Object> up = new HashMap<>();
-                            up.put("Notif", true);
-                            firestore.collection("JoinSiswa").document(ds.getId()).update(up);
-                        }
-                    }
-                });
                 firestore.collection("Mapel").document(getActivity().getIntent().getStringExtra("uniqueCode")).collection("Bab").document(getActivity().getIntent().getStringExtra("idBab")).collection("Nilai").document(classes.get(x).getUID()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -110,6 +99,17 @@ public class IsiNilaiGuruFragment extends Fragment {
                         }
                     }
                 });
+                firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).whereEqualTo("UID", classes.get(x).getUID()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            Map<String, Object> up = new HashMap<>();
+                            up.put("Notif", true);
+                            firestore.collection("JoinSiswa").document(ds.getId()).update(up);
+                        }
+                    }
+                });
+
             }
         }
     }

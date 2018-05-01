@@ -34,10 +34,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.NilaiTugasGuruFragment;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.StatistikGuruFragment;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.StatistikGuruActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.UlanganGuruFragment;
 
 public class MapelGuruActivity extends AppCompatActivity {
@@ -74,9 +75,8 @@ public class MapelGuruActivity extends AppCompatActivity {
         tvCode = findViewById(R.id.tvUniqueCode);
         tvCode.setText("Kode : " + uniqueCode);
         tabLayout = findViewById(R.id.tabs);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_graph);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilai);
-        tabLayout.getTabAt(2).setIcon(R.drawable.icon_nilaiulangan);
+        tabLayout.getTabAt(0).setIcon(R.drawable.icon_nilai);
+        tabLayout.getTabAt(1).setIcon(R.drawable.icon_nilaiulangan);
         nestedScrollView = findViewById(R.id.nested);
         nestedScrollView.setFillViewport(true);
         ivIcon = findViewById(R.id.gambarmapel);
@@ -114,7 +114,14 @@ public class MapelGuruActivity extends AppCompatActivity {
             }
         });
         TabLayout tabLayout = findViewById(R.id.tabs);
-
+        findViewById(R.id.fab_graph_guru).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent in = new Intent(MapelGuruActivity.this, StatistikGuruActivity.class);
+                in.putExtra("UniqueCode", uniqueCode);
+                startActivity(in);
+            }
+        });
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         getData();
@@ -202,10 +209,20 @@ public class MapelGuruActivity extends AppCompatActivity {
                 firestore.collection("Mapel").document(uniqueCode).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Intent i = new Intent(MapelGuruActivity.this, MenuGuruActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
-                        finish();
+                        firestore.collection("JoinSiswa").whereEqualTo("Mapel", uniqueCode).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (DocumentSnapshot ds : task.getResult()) {
+                                    firestore.collection("JoinSiswa").document(ds.getId()).delete();
+                                }
+                                Intent i = new Intent(MapelGuruActivity.this, MenuGuruActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                                finish();
+                            }
+
+                        });
+
                     }
                 });
             }
@@ -232,20 +249,19 @@ public class MapelGuruActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
+
                 case 0:
-                    return new StatistikGuruFragment();
-                case 1:
                     return new NilaiTugasGuruFragment();
-                case 2:
+                case 1:
                     return new UlanganGuruFragment();
                 default:
-                    return new StatistikGuruFragment();
+                    return new NilaiTugasGuruFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
     }
 }

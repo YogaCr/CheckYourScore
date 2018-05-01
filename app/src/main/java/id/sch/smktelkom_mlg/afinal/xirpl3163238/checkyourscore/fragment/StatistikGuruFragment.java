@@ -18,8 +18,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -127,29 +127,22 @@ public class StatistikGuruFragment extends Fragment {
                                             for (int i = 0; i < values.length; i++) {
                                                 values[i] = new DataPoint(i + 1, list.get(i).getNilai());
                                             }
-                                            data = new LineGraphSeries<>(values);
-                                            graphView.addSeries(data);
                                             final String[] label = new String[list.size()];
                                             for (int i = 0; i < label.length; i++) {
                                                 label[i] = list.get(i).getNama();
                                             }
-
-                                            graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
-                                                @Override
-                                                public String formatLabel(double value, boolean isValueX) {
-
-                                                    if (isValueX) {
-                                                        return label[((int) value) - 1];
-                                                    }
-
-                                                    return super.formatLabel(value, isValueX);
-                                                }
-                                            });
-                                            graphView.getViewport().setMaxX(list.size());
+                                            String[] labelY = {"0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"};
+                                            StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(graphView, label, labelY);
+                                            graphView.getGridLabelRenderer().setLabelFormatter(labelsFormatter);
+                                            graphView.getGridLabelRenderer().setNumHorizontalLabels(label.length);
+                                            graphView.getViewport().setMaxX(0);
+                                            graphView.getViewport().setMaxX(label.length - 1);
                                             graphView.getViewport().setMinY(0);
-                                            graphView.getViewport().setMaxY(120);
-                                            graphView.getViewport().setXAxisBoundsManual(true);
+                                            graphView.getViewport().setMaxY(100);
                                             graphView.getViewport().setYAxisBoundsManual(true);
+                                            data = new LineGraphSeries<>(values);
+                                            graphView.addSeries(data);
+
                                         }
                                     }
                                 }

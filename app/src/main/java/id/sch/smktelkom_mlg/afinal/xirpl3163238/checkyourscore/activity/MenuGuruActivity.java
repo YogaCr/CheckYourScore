@@ -54,12 +54,13 @@ public class MenuGuruActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_guru);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Mohon Tunggu");
-        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setMessage("Harap Tunggu");
         progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         navigationView = findViewById(R.id.nav_view);
 
         rvMapel = findViewById(R.id.rvMapelGuru);
+        findViewById(R.id.tvMenuGuruNone).setVisibility(View.VISIBLE);
         headerview = navigationView.getHeaderView(0);
         tvNamaGuru = headerview.findViewById(R.id.tvNamaGuru);
         tvEmailGuru = headerview.findViewById(R.id.tvEmailGuru);
@@ -105,13 +106,16 @@ public class MenuGuruActivity extends AppCompatActivity
     }
 
     void getData() {
-        mapelList.clear();
+        findViewById(R.id.tvMenuGuruNone).setVisibility(View.VISIBLE);
+
         progressDialog.show();
         firestore.collection("Mapel").whereEqualTo("UID Guru", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                mapelList.clear();
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                        findViewById(R.id.tvMenuGuruNone).setVisibility(View.INVISIBLE);
                         MapelClass m = new MapelClass();
                         m.setNama(documentSnapshot.getString("Nama"));
                         m.setKelas(documentSnapshot.getString("Kelas"));
@@ -129,6 +133,7 @@ public class MenuGuruActivity extends AppCompatActivity
 
                 }
                 progressDialog.hide();
+
             }
 
         });
@@ -151,12 +156,14 @@ public class MenuGuruActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
-        getGambar();
+        getData();
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

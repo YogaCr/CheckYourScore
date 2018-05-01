@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +45,6 @@ public class NilaiTugasGuruFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -60,34 +61,33 @@ public class NilaiTugasGuruFragment extends Fragment {
         tvNone = v.findViewById(R.id.tvTugasGuruNone);
         pbFrag = v.findViewById(R.id.pbFragTugasGuru);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
-        adapter = new TugasGuruAdapter(listTugas, getContext());
+        getData();
         return v;
     }
 
     void getData() {
-        listTugas.clear();
-        adapter.notifyDataSetChanged();
+
         tvNone.setVisibility(View.INVISIBLE);
         pbFrag.setVisibility(View.VISIBLE);
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (task.getResult().size() > 0) {
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            TugasGuruClass guruClass = new TugasGuruClass();
-                            guruClass.setNama(ds.getString("Nama"));
-                            guruClass.setID(ds.getId());
-                            listTugas.add(guruClass);
-                        }
-                        adapter = new TugasGuruAdapter(listTugas, getContext());
-                        adapter.notifyDataSetChanged();
-                        rvTugas.setLayoutManager(new LinearLayoutManager(getContext()));
-                        rvTugas.setAdapter(adapter);
-                    } else {
-                        tvNone.setVisibility(View.VISIBLE);
+                listTugas.clear();
+                if (task.getResult().size() > 0) {
+
+                    for (DocumentSnapshot ds : task.getResult()) {
+                        TugasGuruClass guruClass = new TugasGuruClass();
+                        guruClass.setNama(ds.getString("Nama"));
+                        guruClass.setID(ds.getId());
+                        listTugas.add(guruClass);
                     }
+                    adapter = new TugasGuruAdapter(listTugas, getContext());
+                    adapter.notifyDataSetChanged();
+                    rvTugas.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvTugas.setAdapter(adapter);
+                } else {
+                    tvNone.setVisibility(View.VISIBLE);
                 }
                 pbFrag.setVisibility(View.INVISIBLE);
             }
@@ -95,12 +95,14 @@ public class NilaiTugasGuruFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.mapelRefresh:
-                getData();
-                return true;
+        if (item.getItemId() == R.id.mapelRefresh) {
+            getData();
         }
         return super.onOptionsItemSelected(item);
     }
