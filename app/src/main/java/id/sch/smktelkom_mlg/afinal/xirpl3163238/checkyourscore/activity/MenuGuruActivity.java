@@ -55,7 +55,7 @@ public class MenuGuruActivity extends AppCompatActivity
         setContentView(R.layout.activity_menu_guru);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
-        progressDialog.setCancelable(false);
+
         progressDialog.setCanceledOnTouchOutside(false);
         navigationView = findViewById(R.id.nav_view);
 

@@ -98,7 +98,7 @@ public class MapelActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
-        progressDialog.setCancelable(false);
+
         progressDialog.setCanceledOnTouchOutside(false);
         firestore = FirebaseFirestore.getInstance();
         i = getIntent();
@@ -156,6 +156,7 @@ public class MapelActivity extends AppCompatActivity {
     }
 
     void getData() {
+        progressDialog.show();
         firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

@@ -82,7 +82,7 @@ public class MenuSiswaActivity extends AppCompatActivity
         setContentView(R.layout.activity_menu_siswa);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
-        progressDialog.setCancelable(false);
+
         progressDialog.setCanceledOnTouchOutside(false);
         navigationView = findViewById(R.id.nav_view_siswa);
         headerview = navigationView.getHeaderView(0);
@@ -176,7 +176,7 @@ public class MenuSiswaActivity extends AppCompatActivity
     }
 
     void getData() {
-        findViewById(R.id.tvMenuSiswaNone).setVisibility(View.VISIBLE);
+
         progressDialog.show();
 
         firestore.collection("JoinSiswa")
@@ -213,6 +213,8 @@ public class MenuSiswaActivity extends AppCompatActivity
 
             }
         });
+        if (mapelList.size() == 0)
+            findViewById(R.id.tvMenuSiswaNone).setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class MapelGuruActivity extends AppCompatActivity {
         ctl = findViewById(R.id.ctl);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Harap Tunggu");
-        progressDialog.setCancelable(false);
+
         progressDialog.setCanceledOnTouchOutside(false);
         firestore = FirebaseFirestore.getInstance();
 

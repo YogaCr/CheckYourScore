@@ -57,8 +57,10 @@ public class UlanganFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_ulangan, container, false);
         rvNilaiUlangan = v.findViewById(R.id.recyclerView);
         tvNone = v.findViewById(R.id.tvUlanganSiswaNone);
+        setHasOptionsMenu(true);
         progressBar = v.findViewById(R.id.pbFragUlanganSiswa);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
+        nilaiAdapter = new NilaiAdapter(nilaiUlanganList, getContext());
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("Mapel").document(uniqueCode).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -72,12 +74,13 @@ public class UlanganFragment extends Fragment {
     }
 
     void getData() {
-
+        nilaiUlanganList.clear();
+        nilaiAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                nilaiUlanganList.clear();
+
                 for (DocumentSnapshot ds : task.getResult()) {
                     final String nama = ds.getString("Nama");
                     final String id = ds.getId();
@@ -97,7 +100,9 @@ public class UlanganFragment extends Fragment {
                     });
                     tvNone.setVisibility(View.INVISIBLE);
                 }
+
                 progressBar.setVisibility(View.INVISIBLE);
+
             }
         });
         if (nilaiUlanganList.size() == 0) {
@@ -114,7 +119,7 @@ public class UlanganFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.siswa_refresh) {
             getData();
-            return false;
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

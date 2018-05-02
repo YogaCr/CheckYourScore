@@ -54,6 +54,7 @@ public class TugasFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_tugas, container, false);
         progressBar = v.findViewById(R.id.pbFragTugasSiswa);
+        setHasOptionsMenu(true);
         rvNilaiUlangan = v.findViewById(R.id.recyclerView);
         tvNone = v.findViewById(R.id.tvTugasSiswaNone);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
@@ -71,13 +72,14 @@ public class TugasFragment extends Fragment {
     }
 
     void getData() {
-
+        nilaiTugasList.clear();
+        nilaiAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
-        tvNone.setVisibility(View.INVISIBLE);
+
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                nilaiTugasList.clear();
+
                 for (DocumentSnapshot ds : task.getResult()) {
                     final String nama = ds.getString("Nama");
                     final String id = ds.getId();
@@ -98,11 +100,12 @@ public class TugasFragment extends Fragment {
                     });
                 }
                 progressBar.setVisibility(View.INVISIBLE);
+                if (nilaiTugasList.size() == 0) {
+                    tvNone.setVisibility(View.VISIBLE);
+                }
             }
         });
-        if (nilaiTugasList.size() == 0) {
-            tvNone.setVisibility(View.VISIBLE);
-        }
+
     }
 
     @Override
