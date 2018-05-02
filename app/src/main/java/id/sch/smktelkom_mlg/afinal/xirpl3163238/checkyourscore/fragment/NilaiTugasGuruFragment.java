@@ -61,13 +61,15 @@ public class NilaiTugasGuruFragment extends Fragment {
         tvNone = v.findViewById(R.id.tvTugasGuruNone);
         pbFrag = v.findViewById(R.id.pbFragTugasGuru);
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
+        adapter = new TugasGuruAdapter(listTugas, getContext());
         getData();
         return v;
     }
 
     void getData() {
-
         tvNone.setVisibility(View.INVISIBLE);
+        listTugas.clear();
+        adapter.notifyDataSetChanged();
         pbFrag.setVisibility(View.VISIBLE);
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", true).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -103,6 +105,7 @@ public class NilaiTugasGuruFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.mapelRefresh) {
             getData();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

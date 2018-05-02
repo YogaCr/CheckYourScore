@@ -71,7 +71,7 @@ public class MenuGuruActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
-
+        mapelAdapter = new MapelAdapter(MenuGuruActivity.this, mapelList, true);
 
         tvEmailGuru.setText(mAuth.getCurrentUser().getEmail());
         getData();
@@ -107,12 +107,14 @@ public class MenuGuruActivity extends AppCompatActivity
 
     void getData() {
         findViewById(R.id.tvMenuGuruNone).setVisibility(View.VISIBLE);
+        mapelList.clear();
+        mapelAdapter.notifyDataSetChanged();
 
         progressDialog.show();
         firestore.collection("Mapel").whereEqualTo("UID Guru", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                mapelList.clear();
+
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot documentSnapshot : task.getResult()) {
                         findViewById(R.id.tvMenuGuruNone).setVisibility(View.INVISIBLE);
@@ -161,7 +163,7 @@ public class MenuGuruActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         tvNamaGuru.setText(mAuth.getCurrentUser().getDisplayName());
-        getData();
+        getGambar();
     }
 
 

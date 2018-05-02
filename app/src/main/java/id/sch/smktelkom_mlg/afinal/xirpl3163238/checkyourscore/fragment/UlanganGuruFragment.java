@@ -63,6 +63,7 @@ public class UlanganGuruFragment extends Fragment {
         uniqueCode = getActivity().getIntent().getStringExtra("UniqueCode");
         firestore = FirebaseFirestore.getInstance();
         tvNone = v.findViewById(R.id.tvUlanganGuruNone);
+        adapter = new TugasGuruAdapter(list, getContext());
         getData();
         return v;
     }
@@ -70,6 +71,8 @@ public class UlanganGuruFragment extends Fragment {
     void getData() {
         tvNone.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
+        list.clear();
+        adapter.notifyDataSetChanged();
         firestore.collection("Mapel").document(uniqueCode).collection("Bab").whereEqualTo("Tugas", false).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
