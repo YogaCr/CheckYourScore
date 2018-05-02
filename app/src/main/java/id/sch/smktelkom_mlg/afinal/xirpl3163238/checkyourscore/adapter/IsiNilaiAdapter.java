@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.IsiNilaiClass;
@@ -37,7 +38,12 @@ public class IsiNilaiAdapter extends RecyclerView.Adapter<IsiNilaiAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull IsiNilaiAdapter.ViewHolder holder, int position) {
         holder.NamaSiswa.setText(isiNilaiClassList.get(position).getNamaSiswa());
-        holder.NilaiSiswa.setText(String.valueOf(isiNilaiClassList.get(position).getNilaiSiswa()));
+        DecimalFormat df = new DecimalFormat("0");
+        if (isiNilaiClassList.get(position).getNilaiSiswa() % 1 == 0) {
+            holder.NilaiSiswa.setText(df.format(isiNilaiClassList.get(position).getNilaiSiswa()));
+        } else {
+            holder.NilaiSiswa.setText(String.valueOf(isiNilaiClassList.get(position).getNilaiSiswa()));
+        }
     }
 
     @Override

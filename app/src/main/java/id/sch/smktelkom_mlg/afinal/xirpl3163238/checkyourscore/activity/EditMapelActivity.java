@@ -25,6 +25,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,11 +150,18 @@ public class EditMapelActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 etNama.setText(task.getResult().getString("Nama"));
                 etKelas.setText(task.getResult().getString("Kelas"));
-                etKKM.setText(String.valueOf(task.getResult().getDouble("KKM")));
+                DecimalFormat df = new DecimalFormat("0");
+                if (task.getResult().getDouble("KKM") % 1 == 0) {
+                    etKKM.setText(df.format(task.getResult().getDouble("KKM")));
+                } else {
+                    etKKM.setText(String.valueOf(task.getResult().getDouble("KKM")));
+                }
                 int location = nama.indexOf(task.getResult().getString("Icon"));
                 spin.setSelection(location);
                 if (task.getResult().contains("Sampul")) {
                     Glide.with(EditMapelActivity.this).load(task.getResult().getString("Sampul")).into(ivSampul);
+                } else {
+                    ivSampul.setImageResource(R.drawable.no_image);
                 }
                 progressDialog.hide();
             }

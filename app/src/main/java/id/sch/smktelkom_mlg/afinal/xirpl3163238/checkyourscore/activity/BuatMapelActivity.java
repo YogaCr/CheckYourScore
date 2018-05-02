@@ -105,11 +105,13 @@ public class BuatMapelActivity extends AppCompatActivity {
                                             int y = r.nextInt(abjad.length());
                                             kode += abjad.charAt(y);
                                         }
+                                        final String finalKode = kode;
                                         firestore.collection("Mapel").document(kode).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    Intent i = new Intent(BuatMapelActivity.this, MenuGuruActivity.class);
+                                                    Intent i = new Intent(BuatMapelActivity.this, MapelGuruActivity.class);
+                                                    i.putExtra("UniqueCode", finalKode);
                                                     startActivity(i);
                                                     finish();
                                                 }
@@ -125,11 +127,13 @@ public class BuatMapelActivity extends AppCompatActivity {
                             int y = r.nextInt(abjad.length());
                             kode += abjad.charAt(y);
                         }
+                        final String finalKode = kode;
                         firestore.collection("Mapel").document(kode).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Intent i = new Intent(BuatMapelActivity.this, MenuGuruActivity.class);
+                                    Intent i = new Intent(BuatMapelActivity.this, MapelGuruActivity.class);
+                                    i.putExtra("UniqueCode", finalKode);
                                     startActivity(i);
                                     finish();
                                 }

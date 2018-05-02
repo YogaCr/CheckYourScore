@@ -42,7 +42,7 @@ public class NilaiAdapter extends RecyclerView.Adapter<NilaiAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.deskripsi.setText(nilaiList.get(position).getDeskripsi());
         DecimalFormat df = new DecimalFormat("0");
-        if (nilaiList.get(position).getNilai() % 10 == 0) {
+        if (nilaiList.get(position).getNilai() % 1 == 0) {
             holder.nilai.setText(df.format(nilaiList.get(position).getNilai()));
         } else {
             holder.nilai.setText(String.valueOf(nilaiList.get(position).getNilai()));

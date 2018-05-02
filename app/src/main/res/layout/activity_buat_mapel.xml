@@ -83,7 +83,8 @@
         <ImageView
             android:id="@+id/ivSampul"
             android:layout_width="150dp"
-            android:layout_height="150dp" />
+            android:layout_height="150dp"
+            android:src="@drawable/no_image" />
 
         <Button
             android:id="@+id/btnBuatMapel"
