@@ -1,5 +1,6 @@
 package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -57,6 +58,7 @@ public class MapelAdapter extends RecyclerView.Adapter<MapelAdapter.ViewHolder> 
                     Intent i = new Intent(context, MapelGuruActivity.class);
                     i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());
                     context.startActivity(i);
+                    ((Activity) context).finish();
                 } else {
                     Intent i = new Intent(context, MapelActivity.class);
                     i.putExtra("UniqueCode", mapelList.get(position).getUniqueCode());

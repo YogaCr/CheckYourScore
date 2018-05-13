@@ -106,8 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
-        android:background="#000000"
-        android:src="@drawable/icon_add" />
+        app:srcCompat="@drawable/icon_add" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_graph_guru"
@@ -115,6 +114,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:layout_margin="@dimen/fab_margin"
-        android:background="#000000"
-        android:src="@drawable/icon_graph" />
+        app:srcCompat="@drawable/icon_graph" />
 </android.support.design.widget.CoordinatorLayout>

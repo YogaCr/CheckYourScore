@@ -36,6 +36,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.MenuUtamaActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.NilaiTugasGuruFragment;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.StatistikGuruActivity;
@@ -63,6 +64,14 @@ public class MapelGuruActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getData();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, MenuUtamaActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

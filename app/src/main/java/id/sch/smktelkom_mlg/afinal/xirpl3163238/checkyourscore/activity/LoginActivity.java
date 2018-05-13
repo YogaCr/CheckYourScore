@@ -38,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.MenuUtamaActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -187,14 +188,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     void afterLoginSiswa() {
-        Intent i = new Intent(LoginActivity.this, MenuSiswaActivity.class);
+        Intent i = new Intent(LoginActivity.this, MenuUtamaActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
     }
 
     void afterLoginGuru() {
-        Intent i = new Intent(LoginActivity.this, MenuGuruActivity.class);
+        Intent i = new Intent(LoginActivity.this, MenuUtamaActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
@@ -250,7 +251,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     }
                                 }
                             });
-
                         } else {
                             editor.putBoolean(pref_key, false);
                             editor.apply();
@@ -287,10 +287,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     }
                                 }
                             });
-
                         }
-
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

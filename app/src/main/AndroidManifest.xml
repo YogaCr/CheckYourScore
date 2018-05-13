@@ -7,7 +7,6 @@
 
     <application
         android:allowBackup="true"
-
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:logo="@mipmap/ic_launcher"
@@ -77,7 +76,10 @@
             android:label="Statistik" />
         <activity
             android:name=".fragment.StatistikGuruActivity"
-            android:label="Statistik"></activity>
+            android:label="Statistik" />
+        <activity
+            android:name=".MenuUtamaActivity"
+            android:label="@string/title_activity_menu_utama" />
     </application>
 
 </manifest>
