@@ -72,7 +72,6 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditNamaPengguna.setInputType(InputType.TYPE_CLASS_TEXT);
-                EditNamaPengguna.requestFocus();
                 SelesaiNamaPengguna.setVisibility(View.VISIBLE);
                 GantiNamaPengguna.setVisibility(View.INVISIBLE);
             }
