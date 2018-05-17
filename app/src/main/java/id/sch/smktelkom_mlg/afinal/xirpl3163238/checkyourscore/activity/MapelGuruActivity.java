@@ -36,7 +36,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.MenuUtamaActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.NilaiTugasGuruFragment;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment.StatistikGuruActivity;
@@ -224,7 +223,7 @@ public class MapelGuruActivity extends AppCompatActivity {
                                 for (DocumentSnapshot ds : task.getResult()) {
                                     firestore.collection("JoinSiswa").document(ds.getId()).delete();
                                 }
-                                Intent i = new Intent(MapelGuruActivity.this, MenuGuruActivity.class);
+                                Intent i = new Intent(MapelGuruActivity.this, MenuUtamaActivity.class);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
                                 finish();

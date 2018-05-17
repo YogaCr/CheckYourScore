@@ -140,7 +140,7 @@ public class MapelActivity extends AppCompatActivity {
                         builder.setPositiveButton("Kembali", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent i = new Intent(MapelActivity.this, MenuSiswaActivity.class);
+                                Intent i = new Intent(MapelActivity.this, MenuUtamaActivity.class);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
                                 finish();
@@ -244,7 +244,7 @@ public class MapelActivity extends AppCompatActivity {
                             String id = ds.getId();
                             firestore.collection("Mapel").document(uniqueCode).collection("Bab").document(id).collection("Nilai").document(mAuth.getCurrentUser().getUid()).delete();
                         }
-                        Intent i = new Intent(MapelActivity.this, MenuSiswaActivity.class);
+                        Intent i = new Intent(MapelActivity.this, MenuUtamaActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
                         finish();

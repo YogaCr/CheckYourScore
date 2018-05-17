@@ -78,7 +78,7 @@
             android:name=".fragment.StatistikGuruActivity"
             android:label="Statistik" />
         <activity
-            android:name=".MenuUtamaActivity"
+            android:name=".activity.MenuUtamaActivity"
             android:label="@string/title_activity_menu_utama" />
     </application>
 
