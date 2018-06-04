@@ -55,7 +55,8 @@
                     android:layout_marginLeft="24dp"
                     android:layout_marginTop="24dp"
                     android:text="Kode : dfdfd"
-                    android:textColor="#ffffff" />
+                    android:textColor="#ffffff"
+                    android:textIsSelectable="true" />
 
             </FrameLayout>
 
@@ -101,18 +102,34 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/ic_menu_black_24dp" />
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_nilai"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="16dp"
+        android:backgroundTint="#9b9b9b"
+        android:visibility="invisible"
+        app:borderWidth="0dp"
         app:srcCompat="@drawable/icon_add" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_graph_guru"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start|bottom"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="140dp"
+        android:layout_marginRight="16dp"
+        android:backgroundTint="#9b9b9b"
+        android:visibility="invisible"
+        app:borderWidth="0dp"
         app:srcCompat="@drawable/icon_graph" />
 </android.support.design.widget.CoordinatorLayout>

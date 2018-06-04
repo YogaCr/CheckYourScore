@@ -22,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,8 +56,10 @@ public class MapelGuruActivity extends AppCompatActivity {
     SubtitleCollapsingToolbarLayout ctl;
     NestedScrollView nestedScrollView;
     ProgressDialog progressDialog;
-    FloatingActionButton fabTambahNilai;
+    FloatingActionButton fabTambahNilai, fabMore, fabGrafik;
     String uniqueCode;
+    boolean fabBuka = false;
+    Animation animFabOpen, animFabClose;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -78,7 +82,8 @@ public class MapelGuruActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapel_guru);
         i = getIntent();
-
+        animFabOpen = AnimationUtils.loadAnimation(this, R.anim.fab_open);
+        animFabClose = AnimationUtils.loadAnimation(this, R.anim.fab_close);
         uniqueCode = i.getStringExtra("UniqueCode");
         tvCode = findViewById(R.id.tvUniqueCode);
         tvCode.setText("Kode : " + uniqueCode);
@@ -99,6 +104,8 @@ public class MapelGuruActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
 
         fabTambahNilai = findViewById(R.id.fab_add_nilai);
+        fabMore = findViewById(R.id.fab_more);
+        fabGrafik = findViewById(R.id.fab_graph_guru);
         fabTambahNilai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,12 +129,32 @@ public class MapelGuruActivity extends AppCompatActivity {
             }
         });
         TabLayout tabLayout = findViewById(R.id.tabs);
-        findViewById(R.id.fab_graph_guru).setOnClickListener(new View.OnClickListener() {
+        fabGrafik.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent in = new Intent(MapelGuruActivity.this, StatistikGuruActivity.class);
                 in.putExtra("UniqueCode", uniqueCode);
                 startActivity(in);
+            }
+        });
+        fabMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!fabBuka) {
+                    fabTambahNilai.startAnimation(animFabOpen);
+                    fabGrafik.startAnimation(animFabOpen);
+                    fabTambahNilai.setVisibility(View.VISIBLE);
+                    fabGrafik.setVisibility(View.VISIBLE);
+                    fabMore.setImageResource(R.drawable.ic_close_black_24dp);
+                    fabBuka = true;
+                } else {
+                    fabTambahNilai.startAnimation(animFabClose);
+                    fabGrafik.startAnimation(animFabClose);
+                    fabTambahNilai.setVisibility(View.INVISIBLE);
+                    fabGrafik.setVisibility(View.INVISIBLE);
+                    fabMore.setImageResource(R.drawable.ic_menu_black_24dp);
+                    fabBuka = false;
+                }
             }
         });
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));

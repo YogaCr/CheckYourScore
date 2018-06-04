@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,6 +41,7 @@ public class IsiNilaiGuruFragment extends Fragment {
     InputNilaiAdapter adapter;
     FirebaseFirestore firestore;
     String uniqueCode, idBab;
+    TextView tvNone;
 
     public IsiNilaiGuruFragment() {
         // Required empty public constructor
@@ -54,6 +56,7 @@ public class IsiNilaiGuruFragment extends Fragment {
         uniqueCode = getActivity().getIntent().getStringExtra("uniqueCode");
         idBab = getActivity().getIntent().getStringExtra("idBab");
         View v = inflater.inflate(R.layout.fragment_isi_nilai_guru, container, false);
+        tvNone = v.findViewById(R.id.tvInputNilaiNone);
         recyclerView = v.findViewById(R.id.rvIsiNilaiSiswa);
         firestore = FirebaseFirestore.getInstance();
         getData();
@@ -139,5 +142,10 @@ public class IsiNilaiGuruFragment extends Fragment {
                 }
             }
         });
+        if (classes.size() == 0) {
+            tvNone.setVisibility(View.VISIBLE);
+        } else {
+            tvNone.setVisibility(View.INVISIBLE);
+        }
     }
 }

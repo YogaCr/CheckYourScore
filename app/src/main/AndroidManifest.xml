@@ -26,11 +26,6 @@
             android:name=".activity.LoginActivity"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name=".activity.MenuGuruActivity"
-            android:label="Menu Guru"
-            android:launchMode="singleInstance"
-            android:theme="@style/NoActionBar" />
-        <activity
             android:name=".activity.BuatMapelActivity"
             android:label="Buat Mapel" />
         <activity
@@ -39,11 +34,6 @@
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".activity.MapelGuruActivity"
-            android:launchMode="singleInstance"
-            android:theme="@style/NoActionBar" />
-        <activity
-            android:name=".activity.MenuSiswaActivity"
-            android:label="Menu Siswa"
             android:launchMode="singleInstance"
             android:theme="@style/NoActionBar" />
         <activity

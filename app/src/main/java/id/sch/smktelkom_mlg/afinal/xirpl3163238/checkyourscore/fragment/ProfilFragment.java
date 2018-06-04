@@ -2,7 +2,11 @@ package id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.fragment;
 
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,6 +14,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +26,18 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -37,10 +49,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.Class.Notif;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.R;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.AboutActivity;
 import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.LoginActivity;
+import id.sch.smktelkom_mlg.afinal.xirpl3163238.checkyourscore.activity.MapelActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -49,12 +61,14 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ProfilFragment extends Fragment {
 
+    public static final int NOTIFICATION_ID = 10;
     private final int PICK_IMAGE_REQUEST = 71;
     FirebaseFirestore firestore;
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseAuth auth;
     TextView etEmail;
+    ListenerRegistration listenerRegistration;
     private ImageButton EditProfilGambar, GantiNamaPengguna, SelesaiNamaPengguna;
     private EditText EditNamaPengguna;
     private CircleImageView gambarprofil;
@@ -64,6 +78,62 @@ public class ProfilFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (!getContext().getSharedPreferences("IS_GURU", Context.MODE_PRIVATE).getBoolean("IS_GURU", true)) {
+            getNotif();
+        }
+    }
+
+    public void getNotif() {
+        final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        listenerRegistration = firestore.collection("JoinSiswa").whereEqualTo("UID", mAuth.getCurrentUser().getUid()).whereEqualTo("Notif", true).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                for (DocumentSnapshot ds : documentSnapshots) {
+                    final String mapel = ds.getString("Mapel");
+                    firestore.collection("Mapel").document(mapel).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().exists()) {
+                                    NotificationCompat.Builder builder;
+                                    Intent in = new Intent(getContext(), MapelActivity.class);
+                                    in.putExtra("UniqueCode", task.getResult().getId());
+                                    in.putExtra("FromNotif", true);
+                                    in.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    PendingIntent intent = PendingIntent.getActivity(getContext(), 0, in, PendingIntent.FLAG_ONE_SHOT);
+
+                                    builder = new NotificationCompat.Builder(getContext()).setContentTitle("Mapel " + task.getResult().getString("Nama") + " telah diupdate").setContentText("Silahkan dicek").setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(intent);
+                                    NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                                    Notification notification = builder.build();
+                                    notification.flags = Notification.FLAG_AUTO_CANCEL;
+                                    notificationManager.notify(NOTIFICATION_ID, builder.build());
+                                    firestore.collection("JoinSiswa").whereEqualTo("Mapel", mapel).whereEqualTo("UID", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                if (task.getResult().size() > 0) {
+                                                    for (DocumentSnapshot ds : task.getResult()) {
+                                                        Map<String, Object> map = new HashMap<>();
+                                                        map.put("Notif", false);
+                                                        firestore.collection("JoinSiswa").document(ds.getId()).update(map);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -120,7 +190,9 @@ public class ProfilFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 auth.signOut();
-                Notif.unReg();
+                if (listenerRegistration != null) {
+                    listenerRegistration.remove();
+                }
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
